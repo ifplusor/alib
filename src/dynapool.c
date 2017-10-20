@@ -34,20 +34,20 @@ bool dynapool_destruct(dynapool_t pool) {
 void *dynapool_alloc_node(dynapool_t pool) {
   deque_node_t deque = &pool->_sentinel;
   if (deque_empty(deque)) {
-    if (pool->alloc_cur == DYNAPOOL_REGION_SIZE) {
+    if (pool->alloc_cur >= DYNAPOOL_REGION_SIZE) {
       fprintf(stderr, "%s(%d) - fatal: overflow in dynapool!", __FILE__, __LINE__);
       exit(-1);
     }
 
     // extend memory
     if (pool->_nodepool[pool->alloc_cur] == NULL) {
-      pool->_nodepool[pool->alloc_cur] = amalloc(pool->node_size * pool->alloc_size);
+      pool->_nodepool[pool->alloc_cur] = amalloc(pool->node_size * (pool->alloc_size << (pool->alloc_cur - 1)));
       if (pool->_nodepool[pool->alloc_cur] == NULL) return NULL;
     }
 
     // init memory
     char *region = pool->_nodepool[pool->alloc_cur];
-    for (size_t j = 0; j < pool->alloc_size << (pool->alloc_cur - 1); j++) {
+    for (size_t j = 0; j < (pool->alloc_size << (pool->alloc_cur - 1)); j++) {
       void *node = region + pool->node_size * j;
       deque_push_back(deque, node, deque_node_s, forw);
     }
@@ -69,9 +69,8 @@ bool dynapool_reset(dynapool_t pool) {
   deque_init(deque);
 
   // for init memory
-  size_t alloc_size = DYNAPOOL_INIT_SIZE;
   char *region = pool->_nodepool[0];
-  for (size_t j = 0; j < alloc_size; j++) {
+  for (size_t j = 0; j < DYNAPOOL_INIT_SIZE; j++) {
     void *node = region + pool->node_size * j;
     deque_push_back(deque, node, deque_node_s, forw);
   }
