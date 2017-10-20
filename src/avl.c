@@ -52,7 +52,7 @@ void avl_reset(avl_t self) {
  *   +   +                     +   +
  * d       e                 e       c
  */
-avl_node_t avl_rotate_ll(avl_t self, avl_node_t a) {
+static inline avl_node_t avl_rotate_ll(avl_t self, avl_node_t a) {
   avl_node_t p = a->avl_parent;
   avl_node_t b = a->avl_left;
   avl_node_t e = b->avl_right;
@@ -72,7 +72,7 @@ avl_node_t avl_rotate_ll(avl_t self, avl_node_t a) {
   return b;
 }
 
-avl_node_t avl_rotate_lz(avl_t self, avl_node_t a) {
+static inline avl_node_t avl_rotate_lz(avl_t self, avl_node_t a) {
   avl_node_t p = a->avl_parent;
   avl_node_t b = a->avl_left;
   avl_node_t e = b->avl_right;
@@ -101,7 +101,7 @@ avl_node_t avl_rotate_lz(avl_t self, avl_node_t a) {
  *       +   +         d       f   g      c
  *     f       g
  */
-avl_node_t avl_rotate_lr(avl_t self, avl_node_t a) {
+static inline avl_node_t avl_rotate_lr(avl_t self, avl_node_t a) {
   avl_node_t p = a->avl_parent;
   avl_node_t b = a->avl_left;
   avl_node_t e = b->avl_right;
@@ -139,7 +139,7 @@ avl_node_t avl_rotate_lr(avl_t self, avl_node_t a) {
   return e;
 }
 
-avl_node_t avl_rotate_rr(avl_t self, avl_node_t a) {
+static inline avl_node_t avl_rotate_rr(avl_t self, avl_node_t a) {
   avl_node_t p = a->avl_parent;
   avl_node_t b = a->avl_right;
   avl_node_t e = b->avl_left;
@@ -159,7 +159,7 @@ avl_node_t avl_rotate_rr(avl_t self, avl_node_t a) {
   return b;
 }
 
-avl_node_t avl_rotate_rz(avl_t self, avl_node_t a) {
+static inline avl_node_t avl_rotate_rz(avl_t self, avl_node_t a) {
   avl_node_t p = a->avl_parent;
   avl_node_t b = a->avl_right;
   avl_node_t e = b->avl_left;
@@ -179,7 +179,7 @@ avl_node_t avl_rotate_rz(avl_t self, avl_node_t a) {
   return b;
 }
 
-avl_node_t avl_rotate_rl(avl_t self, avl_node_t a) {
+static inline avl_node_t avl_rotate_rl(avl_t self, avl_node_t a) {
   avl_node_t p = a->avl_parent;
   avl_node_t b = a->avl_right;
   avl_node_t e = b->avl_left;
@@ -222,16 +222,13 @@ avl_node_t avl_search_node(avl_t self, void *key,
   avl_node_t p = self->root, pp = NULL;
   uint64_t path = 1LL; // left is 0, right is 1.
   while (p != NULL) {
-    int ret = self->compare(p, key);
+    uptr_t ret = (uptr_t) self->compare(p, key);
     if (ret == 0) break;
     pp = p;
     path <<= 1;
-    if (ret > 0) {
-      p = p->avl_left;
-    } else {
-      p = p->avl_right;
-      path |= 1LL;
-    }
+    ret >>= sizeof(uptr_t) * 8 - 1; // get sign bit
+    p = p->link[ret];
+    path |= ret;
   }
 
   if (out_parent != NULL) *out_parent = pp;

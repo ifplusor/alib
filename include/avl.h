@@ -31,7 +31,7 @@ typedef struct avl_node {
   sptr_t bf; // balance factor
 } avl_node_s;
 
-typedef int (*avl_compare_func)(avl_node_t node, void *key);
+typedef sptr_t (*avl_compare_func)(avl_node_t node, void *key);
 typedef avl_node_t (*avl_replace_func)(avl_node_t old, avl_node_t new);
 
 typedef struct avl {
