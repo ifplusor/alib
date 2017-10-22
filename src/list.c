@@ -24,29 +24,30 @@ aobj list_init(void *ptr, void *data) {
 void list_clean(aobj id) {
   if (TAGGED_AOBJECT(id)) {
     list_t con = GET_AOBJECT(id);
-    aobj_release(con->car);
-    aobj_release(con->cdr);
+    _release(con->car);
+    _release(con->cdr);
+    // TODO: optimize recursion for avoid stack overflow
   }
 }
 
-aobj cons(aobj a, aobj b) {
+aobj list_cons(aobj a, aobj b) {
   aobj id = aobj_alloc(list_s, list_init);
   if (id != NULL) {
     list_t con = GET_AOBJECT(id);
-    aobj_retain(a);
+    _retain(a);
     con->car = a;
-    aobj_retain(b);
+    _retain(b);
     con->cdr = b;
   }
   return id;
 }
 
-aobj car(aobj list) {
+aobj list_car(aobj list) {
   list_t con = GET_AOBJECT(list);
   return con->car;
 }
 
-aobj cdr(aobj list) {
+aobj list_cdr(aobj list) {
   list_t con = GET_AOBJECT(list);
   return con->cdr;
 }

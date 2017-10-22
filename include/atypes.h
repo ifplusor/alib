@@ -65,6 +65,8 @@ typedef uint32_t uptr_t;
 
 #define TW0_CHARS_TO_INT(c1, c2) (LOW8BIT(c1) << 8 | LOW8BIT(c2))
 
+#define __(obj, func, args...) func(obj, ##args)
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

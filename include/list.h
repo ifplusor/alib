@@ -9,8 +9,8 @@ typedef struct list {
   aobj car, cdr;
 } list_s;
 
-aobj cons(aobj a, aobj b);
-aobj car(aobj list);
-aobj cdr(aobj list);
+aobj list_cons(aobj a, aobj b);
+aobj list_car(aobj list);
+aobj list_cdr(aobj list);
 
 #endif //_ALIB_LIST_H_

@@ -41,11 +41,18 @@ typedef struct aobj_meta {
 aobj _aobj_alloc(size_t size, aobj_init_func init, void *data);
 #define aobj_alloc(type, init) _aobj_alloc(sizeof(type), init, NULL)
 #define aobj_alloc_with(type, init, data) _aobj_alloc(sizeof(type), init, data)
+#define aobj_alloc_with_ex(type, init, data, size) \
+  _aobj_alloc(sizeof(type) + (size), init, data)
 
 aobj aobj_init(void *ptr, aobj_meta_t meta);
 
 void aobj_retain(aobj id);
 void aobj_release(aobj id);
+
+#define _retain(id) aobj_retain(id)
+#define _release(id) aobj_release(id)
+
+#define _(type, id, message, args...) __(id, type##_##message, ##args)
 
 #ifdef __cplusplus
 }

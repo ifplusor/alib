@@ -10,6 +10,7 @@ set(HEADER_FILES
         include/aobj.h
         include/taggedpointer.h
         include/astr.h
+        include/dynastr.h
         include/acom.h
         include/list.h
         include/dlnk.h
@@ -23,6 +24,7 @@ set(SOURCE_FILES
         src/amem.c
         src/aobj.c
         src/astr.c
+        src/dynastr.c
         src/acom.c
         src/list.c
         src/dlnk.c
