@@ -3,7 +3,7 @@ project(alib)
 
 set(CMAKE_C_STANDARD 99)
 
-set(HEADER_FILES
+set(alib_HEADER_FILES
         include/atypes.h
         include/atomicvar.h
         include/amem.h
@@ -20,7 +20,7 @@ set(HEADER_FILES
         include/dynabuf.h
         include/utf8.h)
 
-set(SOURCE_FILES
+set(alib_SOURCE_FILES
         src/amem.c
         src/aobj.c
         src/astr.c
@@ -35,7 +35,7 @@ set(SOURCE_FILES
         src/utf8.c)
 
 add_library(alib STATIC
-        ${HEADER_FILES} ${SOURCE_FILES})
+        ${alib_HEADER_FILES} ${alib_SOURCE_FILES})
 target_include_directories(alib
         PUBLIC include)
 target_link_libraries(alib
