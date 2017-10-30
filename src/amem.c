@@ -26,8 +26,21 @@
 static size_t used_memory = 0;
 pthread_mutex_t used_memory_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+#include <execinfo.h>
+void print_stacktrace() {
+  int size = 16;
+  void *array[16];
+  int stack_num = backtrace(array, size);
+  char **stacktrace = backtrace_symbols(array, stack_num);
+  for (int i = 0; i < stack_num; ++i) {
+    fprintf(stderr, "%s\n", stacktrace[i]);
+  }
+  free(stacktrace);
+}
+
 static void amalloc_default_oom(size_t size) {
   fprintf(stderr, "amalloc: Out of memory trying to allocate %zu bytes\n", size);
+  print_stacktrace();
   fflush(stderr);
   abort();
 }
