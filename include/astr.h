@@ -36,8 +36,15 @@ typedef struct str_pos {
   size_t so, eo;
 } strpos_s, *strpos_t;
 
-bool strpos_wlc(strpos_s w, strpos_s lc);
-bool strpos_wrc(strpos_s w, strpos_s rc);
+//bool strpos_wlc(strpos_s w, strpos_s lc);
+//bool strpos_wrc(strpos_s w, strpos_s rc);
+inline bool strpos_wlc(strpos_s w, strpos_s lc) {
+  return lc.so < w.so && lc.eo > w.so ? true : false;
+}
+
+inline bool strpos_wrc(strpos_s w, strpos_s rc) {
+  return rc.so < w.eo && rc.eo > w.eo ? true : false;
+}
 
 typedef struct str_iter {
   unsigned char *ptr;

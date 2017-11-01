@@ -3,6 +3,8 @@ project(alib)
 
 set(CMAKE_C_STANDARD 99)
 
+add_subdirectory(third_party)
+
 set(alib_HEADER_FILES
         include/atypes.h
         include/atomicvar.h
@@ -34,12 +36,14 @@ set(alib_SOURCE_FILES
         src/dynabuf.c
         src/utf8.c)
 
+if (WIN32)
+list(APPEND alib_SOURCE_FILES src/amem_win.cpp)
+endif ()
+
 add_library(alib STATIC
         ${alib_HEADER_FILES} ${alib_SOURCE_FILES})
 target_include_directories(alib
         PUBLIC include)
-target_link_libraries(alib
-        PUBLIC pthread)
 
 if (UNIX)
     target_compile_options(alib

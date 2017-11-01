@@ -47,6 +47,12 @@ void amalloc_set_oom_handler(void (*oom_handler)(size_t));
 
 #define amem_meta(ptr) ((ameta_t)((char*)(ptr) - sizeof(ameta_s)))
 
+#ifdef WIN32
+extern HANDLE used_memory_mutex;
+#elif defined(_PTHREAD_H)
+extern pthread_mutex_t used_memory_mutex;
+#endif
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

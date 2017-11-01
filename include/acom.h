@@ -26,16 +26,23 @@ extern "C" {
 
 #define offset_of(type, member) ((size_t) &((type *)0)->member)
 
+#ifdef _WIN32
+#define container_of(ptr, type, member) \
+  ((type *)((char *)ptr - offsetof(type,member)))
+#else
 #define container_of(ptr, type, member) ({ \
   const typeof(((type *)0)->member) *__mptr = (ptr); \
   (type *)((char*)__mptr - offset_of(type, member)); \
 })
+#endif
 
 #define ROUND_UP(num, ceil) (((num) & ((ceil)-1)) ? ((num) | ((ceil)-1)) + 1 : (num))
 #define ROUND_UP_8(num) ROUND_UP(num, 8)
 #define ROUND_UP_16(num) ROUND_UP(num, 16)
 
+#ifndef max
 #define max(a, b) ((a) >= (b) ? (a) : (b))
+#endif
 
 #if !REGION_SIZE
 #define REGION_SIZE 0x00001000

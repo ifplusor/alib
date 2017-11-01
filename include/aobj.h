@@ -52,7 +52,7 @@ void aobj_release(aobj id);
 #define _retain(id) aobj_retain(id)
 #define _release(id) aobj_release(id)
 
-#define _(type, id, message, args...) __(id, type##_##message, ##args)
+#define _(type, id, message, ...) __(id, type##_##message, ##__VA_ARGS__)
 
 #ifdef __cplusplus
 }

@@ -33,7 +33,11 @@ typedef int16_t sint16_t;
 typedef int32_t sint32_t;
 typedef int64_t sint64_t;
 
-#ifdef __LP64__
+#ifdef _WIN32
+#include <wtypes.h>
+typedef LONG_PTR  sptr_t;
+typedef ULONG_PTR uptr_t;
+#elif defined(__LP64__)
 typedef sint64_t sptr_t;
 typedef uint64_t uptr_t;
 #else
@@ -65,7 +69,7 @@ typedef uint32_t uptr_t;
 
 #define TW0_CHARS_TO_INT(c1, c2) (LOW8BIT(c1) << 8 | LOW8BIT(c2))
 
-#define __(obj, func, args...) func(obj, ##args)
+#define __(obj, func, ...) func(obj, ##__VA_ARGS__)
 
 #ifdef __cplusplus
 }

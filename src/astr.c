@@ -50,13 +50,7 @@ char *astrnstr(const char *s1, const char *s2, size_t n) {
 //
 // =======================
 
-inline bool strpos_wlc(strpos_s w, strpos_s lc) {
-  return lc.so < w.so && lc.eo > w.so ? true : false;
-}
 
-inline bool strpos_wrc(strpos_s w, strpos_s rc) {
-  return rc.so < w.eo && rc.eo > w.eo ? true : false;
-}
 
 //
 // ========================

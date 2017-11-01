@@ -57,8 +57,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <pthread.h>
-
 #ifndef __ATOMIC_VAR_H
 #define __ATOMIC_VAR_H
 
@@ -98,8 +96,40 @@
 } while(0)
 #define REDIS_ATOMIC_API "sync-builtin"
 
+#elif defined(WIN32)
+#include <windows.h>
+
+#define atomicIncr(var,count) do { \
+    WaitForSingleObject(&var ## _mutex, INFINITE); \
+    var += (count); \
+    ReleaseMutex(&var ## _mutex); \
+} while(0)
+#define atomicGetIncr(var,oldvalue_var,count) do { \
+    WaitForSingleObject(&var ## _mutex, INFINITE); \
+    oldvalue_var = var; \
+    var += (count); \
+    ReleaseMutex(&var ## _mutex); \
+} while(0)
+#define atomicDecr(var,count) do { \
+    WaitForSingleObject(&var ## _mutex, INFINITE); \
+    var -= (count); \
+    ReleaseMutex(&var ## _mutex); \
+} while(0)
+#define atomicGet(var,dstvar) do { \
+    WaitForSingleObject(&var ## _mutex, INFINITE); \
+    dstvar = var; \
+    ReleaseMutex(&var ## _mutex); \
+} while(0)
+#define atomicSet(var,value) do { \
+    WaitForSingleObject(&var ## _mutex, INFINITE); \
+    var = value; \
+    ReleaseMutex(&var ## _mutex); \
+} while(0)
+#define REDIS_ATOMIC_API "win-mutex"
+
 #else
 /* Implementation using pthread mutex. */
+#include <pthread.h>
 
 #define atomicIncr(var,count) do { \
     pthread_mutex_lock(&var ## _mutex); \
