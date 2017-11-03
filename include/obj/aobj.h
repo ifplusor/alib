@@ -2,8 +2,8 @@
 // Created by james on 10/17/17.
 //
 
-#ifndef _ACTRIE_AOBJ_H_
-#define _ACTRIE_AOBJ_H_
+#ifndef _ALIB_OBJECT_H_
+#define _ALIB_OBJECT_H_
 
 #include "taggedpointer.h"
 
@@ -58,4 +58,4 @@ void aobj_release(aobj id);
 }
 #endif /* __cplusplus */
 
-#endif //_ACTRIE_AOBJ_H_
+#endif //_ALIB_OBJECT_H_

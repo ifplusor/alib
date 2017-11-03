@@ -1,0 +1,5 @@
+/* config.h for CMake builds */
+
+#cmakedefine01 ALIB_DEBUG
+
+/* end config.h for CMake builds */

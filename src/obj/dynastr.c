@@ -2,8 +2,8 @@
 // Created by james on 10/22/17.
 //
 
-#include <astr.h>
-#include "dynastr.h"
+#include <std/astr.h>
+#include "obj/dynastr.h"
 
 void dstr_clean(aobj id);
 

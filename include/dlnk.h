@@ -14,24 +14,21 @@ typedef struct doubly_linked_node {
   dlnk_node_t forw, back;
 } dlnk_node_s;
 
-//void dlnk_init(dlnk_node_t dentinel);
-//void dlnk_insert(dlnk_node_t point, dlnk_node_t node);
-//dlnk_node_t dlnk_delete(dlnk_node_t node);
-
-inline void dlnk_init(dlnk_node_t sentinel) {
+static inline void dlnk_init(dlnk_node_t sentinel) {
   sentinel->forw = sentinel->back = sentinel;
 }
 
-inline void dlnk_insert(dlnk_node_t point, dlnk_node_t node) {
+static inline void dlnk_insert(dlnk_node_t point, dlnk_node_t node) {
   node->forw = point->forw;
   node->forw->back = node;
   node->back = point;
   point->forw = node;
 }
 
-inline dlnk_node_t dlnk_delete(dlnk_node_t node) {
+static inline dlnk_node_t dlnk_delete(dlnk_node_t node) {
   node->forw->back = node->back;
   node->back->forw = node->forw;
+  return node;
 }
 
 typedef dlnk_node_s deque_node_s;

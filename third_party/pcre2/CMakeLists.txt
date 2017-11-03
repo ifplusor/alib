@@ -65,17 +65,17 @@ SET(PCRE2_MATCH_LIMIT "10000000" CACHE STRING
 SET(PCRE2_MATCH_LIMIT_DEPTH "MATCH_LIMIT" CACHE STRING
         "Default limit on internal depth of search. See MATCH_LIMIT_DEPTH in config.h.in for details.")
 
-SET(PCRE2GREP_BUFSIZE "20480" CACHE STRING
-        "Buffer starting size parameter for pcre2grep. See PCRE2GREP_BUFSIZE in config.h.in for details.")
-
-SET(PCRE2GREP_MAX_BUFSIZE "1048576" CACHE STRING
-        "Buffer maximum size parameter for pcre2grep. See PCRE2GREP_MAX_BUFSIZE in config.h.in for details.")
-
 SET(PCRE2_NEWLINE "LF" CACHE STRING
         "What to recognize as a newline (one of CR, LF, CRLF, ANY, ANYCRLF, NUL).")
 
 SET(PCRE2_HEAP_MATCH_RECURSE OFF CACHE BOOL
         "Obsolete option: do not use")
+
+SET(PCRE2_SUPPORT_JIT OFF CACHE BOOL
+        "Enable support for Just-in-time compiling.")
+
+SET(PCRE2_SUPPORT_JIT_SEALLOC OFF CACHE BOOL
+        "Enable SELinux compatible execmem allocator in JIT.")
 
 SET(PCRE2_SUPPORT_UNICODE ON CACHE BOOL
         "Enable support for Unicode and UTF-8/UTF-16/UTF-32 encoding.")
@@ -132,6 +132,7 @@ IF (PCRE2_BUILD_PCRE2_32)
     SET(SUPPORT_PCRE2_32 1)
 ENDIF (PCRE2_BUILD_PCRE2_32)
 
+
 IF (PCRE2_SUPPORT_BSR_ANYCRLF)
     SET(BSR_ANYCRLF 1)
 ENDIF (PCRE2_SUPPORT_BSR_ANYCRLF)
@@ -144,6 +145,13 @@ IF (PCRE2_SUPPORT_UNICODE)
     SET(SUPPORT_UNICODE 1)
 ENDIF (PCRE2_SUPPORT_UNICODE)
 
+IF (PCRE2_SUPPORT_JIT)
+    SET(SUPPORT_JIT 1)
+ENDIF (PCRE2_SUPPORT_JIT)
+
+IF (PCRE2_SUPPORT_JIT_SEALLOC)
+    SET(SLJIT_PROT_EXECUTABLE_ALLOCATOR 1)
+ENDIF (PCRE2_SUPPORT_JIT_SEALLOC)
 
 SET(NEWLINE_DEFAULT "")
 
@@ -232,6 +240,7 @@ SET(PCRE2_SOURCES
         src/pcre2_dfa_match.c
         src/pcre2_error.c
         src/pcre2_find_bracket.c
+        src/pcre2_jit_compile.c
         src/pcre2_maketables.c
         src/pcre2_match.c
         src/pcre2_match_data.c
@@ -384,6 +393,7 @@ IF (PCRE2_BUILD_PCRE2_32)
     ENDIF (MINGW AND NOT PCRE2_STATIC)
 ENDIF (PCRE2_BUILD_PCRE2_32)
 
+
 # Help, only for nice output
 IF (BUILD_SHARED_LIBS)
     SET(BUILD_STATIC_LIBS OFF)
@@ -411,6 +421,8 @@ IF (PCRE2_SHOW_REPORT)
     MESSAGE(STATUS "  Build 8 bit PCRE2 library ....... : ${PCRE2_BUILD_PCRE2_8}")
     MESSAGE(STATUS "  Build 16 bit PCRE2 library ...... : ${PCRE2_BUILD_PCRE2_16}")
     MESSAGE(STATUS "  Build 32 bit PCRE2 library ...... : ${PCRE2_BUILD_PCRE2_32}")
+    MESSAGE(STATUS "  Enable JIT compiling support .... : ${PCRE2_SUPPORT_JIT}")
+    MESSAGE(STATUS "  Use SELinux allocator in JIT .... : ${PCRE2_SUPPORT_JIT_SEALLOC}")
     MESSAGE(STATUS "  Enable Unicode support .......... : ${PCRE2_SUPPORT_UNICODE}")
     MESSAGE(STATUS "  Newline char/sequence ........... : ${PCRE2_NEWLINE}")
     MESSAGE(STATUS "  \\R matches only ANYCRLF ......... : ${PCRE2_SUPPORT_BSR_ANYCRLF}")

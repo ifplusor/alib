@@ -2,8 +2,8 @@
 // Created by james on 10/16/17.
 //
 
-#ifndef _ALIB_AMEM_H_
-#define _ALIB_AMEM_H_
+#ifndef _ALIB_MEMORY_H_
+#define _ALIB_MEMORY_H_
 
 #include "atypes.h"
 
@@ -57,4 +57,4 @@ extern pthread_mutex_t used_memory_mutex;
 }
 #endif /* __cplusplus */
 
-#endif //_ALIB_AMEM_H_
+#endif //_ALIB_MEMORY_H_

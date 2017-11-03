@@ -2,7 +2,7 @@
 // Created by james on 10/16/17.
 //
 
-#include "astr.h"
+#include "std/astr.h"
 
 const strlen_s strlen_empty = {.ptr = "", .len = 0};
 
@@ -45,34 +45,4 @@ char *astrnstr(const char *s1, const char *s2, size_t n) {
     s1++;
   }
   return NULL;
-}
-
-//
-// =======================
-
-
-
-//
-// ========================
-
-bool striter_init(striter_t self, unsigned char *ptr, size_t len) {
-  self->ptr = ptr;
-  self->len = len;
-  self->cur = 0;
-  return true;
-}
-
-bool striter_reset(striter_t self) {
-  self->cur = 0;
-  return true;
-}
-
-int striter_cur(striter_t self) {
-  if (self->cur >= self->len) return EOF;
-  return self->ptr[self->cur];
-}
-
-int striter_next(striter_t self) {
-  if (self->cur >= self->len) return EOF;
-  return self->ptr[self->cur++];
 }

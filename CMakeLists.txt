@@ -3,18 +3,25 @@ project(alib)
 
 set(CMAKE_C_STANDARD 99)
 
+#option(ALIB_DEBUG "enable debug alib." OFF)
+#CONFIGURE_FILE(config-cmake.h.in
+#        ${PROJECT_SOURCE_DIR}/include/config.h
+#        @ONLY)
+#ADD_DEFINITIONS(-DALIB_HAVE_CONFIG_H)
+
 add_subdirectory(third_party)
 
 set(alib_HEADER_FILES
         include/atypes.h
+        include/alog.h
         include/atomicvar.h
         include/amem.h
-        include/aobj.h
+        include/obj/aobj.h
         include/taggedpointer.h
-        include/astr.h
-        include/dynastr.h
+        include/std/astr.h
+        include/obj/dynastr.h
         include/acom.h
-        include/list.h
+        include/obj/list.h
         include/dlnk.h
         include/dynapool.h
         include/avl.h
@@ -24,11 +31,11 @@ set(alib_HEADER_FILES
 
 set(alib_SOURCE_FILES
         src/amem.c
-        src/aobj.c
-        src/astr.c
-        src/dynastr.c
+        src/obj/aobj.c
+        src/std/astr.c
+        src/obj/dynastr.c
         src/acom.c
-        src/list.c
+        src/obj/list.c
         src/dlnk.c
         src/dynapool.c
         src/avl.c
@@ -37,7 +44,7 @@ set(alib_SOURCE_FILES
         src/utf8.c)
 
 if (WIN32)
-list(APPEND alib_SOURCE_FILES src/amem_win.cpp)
+    list(APPEND alib_SOURCE_FILES src/amem_win.cpp)
 endif ()
 
 add_library(alib STATIC

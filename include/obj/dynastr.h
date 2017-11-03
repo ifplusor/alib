@@ -5,7 +5,7 @@
 #ifndef _ALIB_DYNASTR_H_
 #define _ALIB_DYNASTR_H_
 
-#include "aobj.h"
+#include "obj/aobj.h"
 
 #if __cplusplus
 extern "C" {

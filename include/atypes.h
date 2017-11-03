@@ -75,6 +75,6 @@ typedef uint32_t uptr_t;
 }
 #endif /* __cplusplus */
 
-#include "aobj.h"
+#include "obj/aobj.h"
 
 #endif //_ALIB_TYPES_H_

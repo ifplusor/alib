@@ -15,8 +15,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "aobj.h"
-#include "astr.h"
+#include "alog.h"
+#include "obj/aobj.h"
+#include "std/astr.h"
 
 //#define DEBUG 1
 

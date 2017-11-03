@@ -2,7 +2,7 @@
 // Created by james on 10/17/17.
 //
 
-#include "aobj.h"
+#include "obj/aobj.h"
 
 aobj _aobj_alloc(size_t size, aobj_init_func init, void *data) {
   aobj_meta_t meta = amalloc(size + sizeof(aobj_meta_s));
