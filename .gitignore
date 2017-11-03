@@ -1,7 +1,6 @@
-dict*
-sdict*
-corpus*
-rs*
+third_party/pcre/include/pcre.h
+third_party/pcre2/include/pcre2.h
+
 report*
 gmon.out
 
@@ -12,14 +11,12 @@ gmon.out
 
 *.swp
 
-!dict.[hc]
-!src/dict0.h
-
 .idea
 cmake-build-*
 
 .vs
 
+cmake-build
 build
 lib
 

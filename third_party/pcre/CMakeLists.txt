@@ -112,9 +112,6 @@ IF (MSVC)
     OPTION(PCRE_STATIC_RUNTIME
             "ON=Compile against the static runtime (/MT)."
             OFF)
-    OPTION(INSTALL_MSVC_PDB
-            "ON=Install .pdb files built by MSVC, if generated"
-            OFF)
 ENDIF (MSVC)
 
 # Prepare build configuration
@@ -591,10 +588,6 @@ IF (PCRE_SHOW_REPORT)
         MESSAGE(STATUS "  Non-standard dll names (prefix) . : ${NON_STANDARD_LIB_PREFIX}")
         MESSAGE(STATUS "  Non-standard dll names (suffix) . : ${NON_STANDARD_LIB_SUFFIX}")
     ENDIF (MINGW AND NOT PCRE_STATIC)
-
-    IF (MSVC)
-        MESSAGE(STATUS "  Install MSVC .pdb files ..........: ${INSTALL_MSVC_PDB}")
-    ENDIF (MSVC)
 
     MESSAGE(STATUS "")
 ENDIF (PCRE_SHOW_REPORT)

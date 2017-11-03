@@ -7,37 +7,38 @@
 #include <stdio.h>
 
 typedef enum alog_level {
-  TRACE,
-  DEBUG,
-  INFO,
-  WARN,
-  ERROR,
-  FATAL
+  trace,
+  debug,
+  info,
+  warn,
+  error,
+  fatal
 } alog_level;
 
 #define ALOG_PREFIX(level, prefix) do { \
   switch (level) { \
-  case FATAL: \
+  case fatal: \
     prefix = "FATAL"; \
     break; \
-  case ERROR: \
+  case error: \
     prefix = "ERROR"; \
     break; \
-  case WARN: \
+  case warn: \
     prefix = "WARN"; \
     break; \
-  case INFO: \
+  case info: \
     prefix = "INFO"; \
     break; \
-  case DEBUG: \
+  case debug: \
     prefix = "DEBUG"; \
     break; \
-  case TRACE: \
+  case trace: \
     prefix = "TRACE"; \
     break; \
   }; \
 } while(0)
 
+#ifdef ALIB_DEBUG
 #define ALOG_FORMAT(level, stream, fmt, ...) do { \
   char *prefix; \
   ALOG_PREFIX(level, prefix); \
@@ -46,8 +47,33 @@ typedef enum alog_level {
   fprintf(stream, fmt, __VA_ARGS__); \
   fprintf(stream, "\n"); \
 } while(0)
+#else
+#define ALOG_FORMAT(level, stream, fmt, ...) do { \
+  char *prefix; \
+  ALOG_PREFIX(level, prefix); \
+  fprintf(stream, "%s(%d) ", __FUNCTION__, __LINE__); \
+  fprintf(stream, "%s: ", prefix); \
+  fprintf(stream, fmt, __VA_ARGS__); \
+  fprintf(stream, "\n"); \
+} while(0)
+#endif
 
+/**
+ * output to stdout
+ */
 #define ALOG(level, msg) ALOG_FORMAT(level, stdout, "%s", msg)
-#define ALOG_ERROR(msg) ALOG_FORMAT(ERROR, stderr, "%s", msg)
+
+/**
+ * output to stderr
+ */
+#define ALOG_ERROR(msg) ALOG_FORMAT(error, stderr, "%s", msg)
+
+/**
+ * output to stderr, than exit.
+ */
+#define ALOG_FATAL(msg) do { \
+  ALOG_FORMAT(fatal, stderr, "%s", msg); \
+  exit(-1); \
+} while(0)
 
 #endif // _ALIB_LOG_H_
