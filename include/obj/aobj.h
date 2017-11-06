@@ -1,6 +1,8 @@
 //
 // Created by james on 10/17/17.
 //
+// Note: we need a filed 'uint32_t magic' for mark object
+//
 
 #ifndef _ALIB_OBJECT_H_
 #define _ALIB_OBJECT_H_
@@ -29,6 +31,7 @@ typedef void *aobj;
 typedef aobj (*aobj_init_func)(void *ptr, void *data);
 typedef void (*aobj_clean_func)(aobj id);
 
+// times of 8 byte
 typedef struct aobj_meta {
   uint32_t isa;
   uint32_t refcnt;

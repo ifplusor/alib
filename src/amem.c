@@ -72,8 +72,7 @@ void *amalloc(size_t size) {
 }
 
 void *acalloc(size_t nmemb, size_t size) {
-  // TODO:
-  void *base = calloc(1, size + PADDING_SIZE);
+  void *base = calloc(1, nmemb * size + PADDING_SIZE);
 
   if (!base) {
     amalloc_oom_handler(size);
@@ -89,6 +88,7 @@ void *acalloc(size_t nmemb, size_t size) {
 }
 
 void *arealloc(void *ptr, size_t size) {
+  // When you pass NULL pointer to realloc, it behaves like malloc
   if (ptr == NULL) return amalloc(size);
 
   ameta_t meta = amem_meta(ptr);

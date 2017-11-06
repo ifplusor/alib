@@ -35,7 +35,7 @@ typedef struct stream {
   stream_func_t _func;
 } stream_s;
 
-stream_t stream_construct(stream_type_e type, const char *src);
+stream_t stream_construct(stream_type_e type, void *src);
 bool stream_destruct(stream_t self);
 
 int stream_getc(stream_t self);

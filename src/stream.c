@@ -116,18 +116,20 @@ static stream_func_l string_stream_func = {
     .sf_rewind = string_stream_rewind,
 };
 
-stream_t string_stream_construct(const char *str) {
+stream_t string_stream_construct(strlen_t str) {
   char *dup = NULL;
   do {
-    dup = strdup(str);
+    dup = malloc(str->len + 1);
     if (dup == NULL) break;
+    memcpy(dup, str->ptr, str->len);
+    dup[str->len] = '\0';
 
     string_stream_t stream = malloc(sizeof(string_stream_s));
     if (stream == NULL) break;
 
     stream->header._func = &string_stream_func;
     stream->str = dup;
-    striter_init(&stream->iter, dup, strlen(dup));
+    striter_init(&stream->iter, dup, str->len);
 
     return (stream_t) stream;
   } while(0);
@@ -135,8 +137,7 @@ stream_t string_stream_construct(const char *str) {
   return NULL;
 }
 
-
-stream_t stream_construct(stream_type_e type, const char *src) {
+stream_t stream_construct(stream_type_e type, void *src) {
   stream_t stream = NULL;
   if (type == stream_type_file) {
     stream = file_stream_construct(src);

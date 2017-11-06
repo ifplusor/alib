@@ -69,6 +69,9 @@ typedef uint32_t uptr_t;
 
 #define TW0_CHARS_TO_INT(c1, c2) (LOW8BIT(c1) << 8 | LOW8BIT(c2))
 
+#define AMEM_MAGIC FOUR_CHARS_TO_INT('A', 'M', 'e', 'm')
+#define AOBJ_MAGIC FOUR_CHARS_TO_INT('A', 'O', 'b', 'j')
+
 #define __(obj, func, ...) func(obj, ##__VA_ARGS__)
 
 #ifdef __cplusplus

@@ -16,8 +16,9 @@ set(alib_HEADER_FILES
         include/alog.h
         include/atomicvar.h
         include/amem.h
-        include/obj/aobj.h
         include/taggedpointer.h
+        include/obj/aobj.h
+        include/obj/pint.h
         include/std/astr.h
         include/obj/dynastr.h
         include/acom.h
@@ -32,6 +33,7 @@ set(alib_HEADER_FILES
 set(alib_SOURCE_FILES
         src/amem.c
         src/obj/aobj.c
+        src/obj/pint.c
         src/std/astr.c
         src/obj/dynastr.c
         src/acom.c

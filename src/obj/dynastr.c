@@ -9,46 +9,51 @@ void dstr_clean(aobj id);
 
 static aobj_meta_s dynastr_meta = {
     .isa = FOUR_CHARS_TO_INT('D', 'S', 'T', 'R'),
-    .refcnt = 0,
     .clean = dstr_clean,
 };
 
 aobj dstr_init(void *ptr, void *data) {
-  aobj id = aobj_init(ptr, &dynastr_meta);
+  dstr_t id = aobj_init(ptr, &dynastr_meta);
   if (id) {
-    dstr_t dstr = GET_AOBJECT(id);
     strlen_t str = data;
-    dstr->size = str->len;
-    dstr->len = astrnlen(str->ptr, dstr->size);
-    strncpy(dstr->str, str->ptr, dstr->len);
-    dstr->str[dstr->len] = '\0';
+    id->len = str->len;
+    memcpy(id->str, str->ptr, str->len);
+    id->str[id->len] = '\0';
+    id->size = str->len;
   }
   return id;
 }
 
 void dstr_clean(aobj id) {
   if (TAGGED_AOBJECT(id)) {
-    dstr_t dstr = GET_AOBJECT(id);
+    dstr_t dstr = id;
   }
 }
 
-aobj dstr(const char *ptr, size_t len) {
-  strlen_s str = {.ptr=(char*)ptr, .len=len};
-  aobj id = aobj_alloc_with_ex(dstr_s, dstr_init, &str, len+1);
+dstr_t dstr(strlen_t str) {
+  dstr_t id = aobj_alloc_with_ex(dstr_s, dstr_init, str, str->len + 1);
   if (id != NULL) {
-    dstr_t dstr = GET_AOBJECT(id);
   }
   return id;
 }
 
-ds dstr2cstr(aobj id) {
+dstr_t dstr_with_buf(const char *buf, size_t len) {
+  strlen_s str = {.ptr=(char*)buf, .len=len};
+  return dstr(&str);
+}
+
+dstr_t dstr_with_cstr(const char *cstr) {
+  return dstr_with_buf(cstr, strlen(cstr));
+}
+
+ds dstr2cstr(dstr_t id) {
   if (id == NULL) return NULL;
-  dstr_t dstr = GET_AOBJECT(id);
+  dstr_t dstr = id;
   return dstr->str;
 }
 
-aobj cstr2dstr(ds ptr) {
+dstr_t cstr2dstr(ds ptr) {
   if (ptr == NULL) return NULL;
   dstr_t dstr = (dstr_t) ((char*)ptr - sizeof(dstr_s));
-  return TAG_AOBJECT(dstr);
+  return dstr;
 }

@@ -14,13 +14,14 @@ aobj aobj_init(void *ptr, aobj_meta_t meta) {
   aobj_meta_t m = ptr;
   *m = *meta;
   m->refcnt = 1;
-  return TAG_AOBJECT(m->object);
+  TAG_AOBJECT(m->object);
+  return m->object;
 }
 
 void aobj_retain(aobj id) {
   if (id == NULL) return;
   if (TAGGED_AOBJECT(id)) {
-    aobj_meta_t meta = aobj_meta(GET_AOBJECT(id));
+    aobj_meta_t meta = aobj_meta(id);
     meta->refcnt++;
   }
 }
@@ -28,7 +29,7 @@ void aobj_retain(aobj id) {
 void aobj_release(aobj id) {
   if (id == NULL) return;
   if (TAGGED_AOBJECT(id)) {
-    aobj_meta_t meta = aobj_meta(GET_AOBJECT(id));
+    aobj_meta_t meta = aobj_meta(id);
     meta->refcnt--;
     if (meta->refcnt <= 0) {
       if (meta->clean != NULL)

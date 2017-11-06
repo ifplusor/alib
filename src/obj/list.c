@@ -13,41 +13,37 @@ static aobj_meta_s list_meta = {
 };
 
 aobj list_init(void *ptr, void *data) {
-  aobj id = aobj_init(ptr, &list_meta);
+  list_t id = aobj_init(ptr, &list_meta);
   if (id) {
-    list_t con = GET_AOBJECT(id);
-    con->car = con->cdr = NULL;
+    id->car = id->cdr = NULL;
   }
   return id;
 }
 
 void list_clean(aobj id) {
   if (TAGGED_AOBJECT(id)) {
-    list_t con = GET_AOBJECT(id);
+    list_t con = id;
     _release(con->car);
     _release(con->cdr);
     // TODO: optimize recursion for avoid stack overflow
   }
 }
 
-aobj list_cons(aobj a, aobj b) {
-  aobj id = aobj_alloc(list_s, list_init);
-  if (id != NULL) {
-    list_t con = GET_AOBJECT(id);
+list_t list_cons(aobj a, aobj b) {
+  list_t con = aobj_alloc(list_s, list_init);
+  if (con != NULL) {
     _retain(a);
     con->car = a;
     _retain(b);
     con->cdr = b;
   }
-  return id;
+  return con;
 }
 
-aobj list_car(aobj list) {
-  list_t con = GET_AOBJECT(list);
-  return con->car;
+aobj list_car(list_t list) {
+  return list->car;
 }
 
-aobj list_cdr(aobj list) {
-  list_t con = GET_AOBJECT(list);
-  return con->cdr;
+aobj list_cdr(list_t list) {
+  return list->cdr;
 }
