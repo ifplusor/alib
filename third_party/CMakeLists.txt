@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 2.8)
+
 # PCRE
 option(ENABLE_PCRE "Enable support for PCRE." ON)
 message("ENABLE_PCRE: ${ENABLE_PCRE}")

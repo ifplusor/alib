@@ -20,7 +20,7 @@ set(alib_HEADER_FILES
         include/obj/aobj.h
         include/obj/pint.h
         include/std/astr.h
-        include/obj/dynastr.h
+        include/obj/dstr.h
         include/acom.h
         include/obj/list.h
         include/dlnk.h
@@ -33,9 +33,8 @@ set(alib_HEADER_FILES
 set(alib_SOURCE_FILES
         src/amem.c
         src/obj/aobj.c
-        src/obj/pint.c
         src/std/astr.c
-        src/obj/dynastr.c
+        src/obj/dstr.c
         src/acom.c
         src/obj/list.c
         src/dlnk.c

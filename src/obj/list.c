@@ -8,7 +8,6 @@ void list_clean(aobj id);
 
 static aobj_meta_s list_meta = {
     .isa = FOUR_CHARS_TO_INT('L', 'I', 'S', 'T'),
-    .refcnt = 0,
     .clean = list_clean,
 };
 
@@ -29,7 +28,7 @@ void list_clean(aobj id) {
   }
 }
 
-list_t list_cons(aobj a, aobj b) {
+afunc_defn(list, cons, list_t, aobj a, aobj b) {
   list_t con = aobj_alloc(list_s, list_init);
   if (con != NULL) {
     _retain(a);
@@ -40,10 +39,10 @@ list_t list_cons(aobj a, aobj b) {
   return con;
 }
 
-aobj list_car(list_t list) {
+afunc_defn(list, car, aobj, list_t list) {
   return list->car;
 }
 
-aobj list_cdr(list_t list) {
+afunc_defn(list, cdr, aobj, list_t list) {
   return list->cdr;
 }

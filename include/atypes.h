@@ -74,6 +74,21 @@ typedef uint32_t uptr_t;
 
 #define __(obj, func, ...) func(obj, ##__VA_ARGS__)
 
+
+#ifndef ALIB_EXP_DECL
+#  ifdef __cplusplus
+#    define ALIB_EXP_DECL  extern "C"
+#    define ALIB_EXP_DEFN  extern "C"
+#  else
+#    define ALIB_EXP_DECL  extern
+#    define ALIB_EXP_DEFN  extern
+#  endif
+#endif
+
+#ifndef ALIB_CALL_CONVENTION
+#define ALIB_CALL_CONVENTION
+#endif
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

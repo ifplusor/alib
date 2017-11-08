@@ -15,11 +15,11 @@ extern "C" {
 
 typedef char *ds;
 
-typedef struct dyna_str {
-  uint32_t magic;
-  size_t len, size;
-  char str[0];
-} dstr_s, *dstr_t;
+aclass(dstr,
+   size_t len;
+   size_t size;
+   char str[0];
+)
 
 dstr_t dstr(strlen_t str);
 dstr_t dstr_with_buf(const char *buf, size_t len);

@@ -3,7 +3,7 @@
 //
 
 #include <std/astr.h>
-#include "obj/dynastr.h"
+#include "obj/dstr.h"
 
 void dstr_clean(aobj id);
 

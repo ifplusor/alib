@@ -13,14 +13,15 @@
 
 #define PADDING_SIZE (ALIGN_BASE(AMEM_ALIGN) + sizeof(ameta_s))
 
-#define amem_align_default(base) amem_align((char*)(base) + sizeof(ameta_s), AMEM_ALIGN)
+#define amem_align_default(base) \
+  amem_align((char*)(base) + sizeof(ameta_s), AMEM_ALIGN)
 
 #define update_amalloc_stat_alloc(__n) do { \
-    atomicIncr(used_memory, __n); \
+  atomicIncr(used_memory, __n); \
 } while(0)
 
 #define update_amalloc_stat_free(__n) do { \
-    atomicDecr(used_memory, __n); \
+  atomicDecr(used_memory, __n); \
 } while(0)
 
 static size_t used_memory = 0;
@@ -54,6 +55,26 @@ static void amalloc_default_oom(size_t size) {
 }
 
 static void (*amalloc_oom_handler)(size_t) = amalloc_default_oom;
+
+/*
+ * memory map:
+ *   +-----------+
+ *   |  padding  |
+ *   +-----------+
+ *   |   ameta   |
+ *   +-----------+ <-- 2^b byte aligned
+ *   |   space   |
+ *   +-----------+
+ */
+
+// times of 8 byte
+typedef struct amem_meta {
+  void *base;
+  size_t size;
+  char space[0];
+} ameta_s, *ameta_t;
+
+#define amem_meta(ptr) ((ameta_t)((char*)(ptr) - sizeof(ameta_s)))
 
 void *amalloc(size_t size) {
   void *base = malloc(size + PADDING_SIZE);

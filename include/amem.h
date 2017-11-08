@@ -11,29 +11,23 @@
 extern "C" {
 #endif /* __cplusplus */
 
+#define AMEM_ALIGN 3
+
 #define ALIGN_BASE(b) (((uptr_t)0x01 << (b)) - 1)
 #define ALIGN_MASK(b) (~ALIGN_BASE(b))
 
-#define amem_align(base, b) ((void*)(((uptr_t)((char*)(base) + ALIGN_BASE(b))) & ALIGN_MASK(b)))
+#define amem_align(base, b) \
+  ((void*)(((uptr_t)((char*)(base) + ALIGN_BASE(b))) & ALIGN_MASK(b)))
 
-#define AMEM_ALIGN 3
+#ifdef WIN32
+extern HANDLE used_memory_mutex;
+#elif defined(_PTHREAD_H)
+extern pthread_mutex_t used_memory_mutex;
+#endif
 
-/*
- * memory map:
- *   +-----------+
- *   |  padding  |
- *   +-----------+
- *   |   ameta   |
- *   +-----------+ <-- 2^b byte aligned
- *   |   space   |
- *   +-----------+
- */
 
-typedef struct amem_meta {
-  void *base;
-  size_t size;
-  char space[0];
-} ameta_s, *ameta_t;
+// alib memory management api
+// ===============================
 
 void *amalloc(size_t size);
 void *acalloc(size_t nmemb, size_t size);
@@ -44,14 +38,6 @@ size_t amalloc_size(void *ptr);
 
 size_t amalloc_used_memory(void);
 void amalloc_set_oom_handler(void (*oom_handler)(size_t));
-
-#define amem_meta(ptr) ((ameta_t)((char*)(ptr) - sizeof(ameta_s)))
-
-#ifdef WIN32
-extern HANDLE used_memory_mutex;
-#elif defined(_PTHREAD_H)
-extern pthread_mutex_t used_memory_mutex;
-#endif
 
 #ifdef __cplusplus
 }

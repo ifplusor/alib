@@ -1,64 +1,59 @@
 //
 // Created by james on 10/17/17.
 //
-// Note: we need a filed 'uint32_t magic' for mark object
-//
 
 #ifndef _ALIB_OBJECT_H_
 #define _ALIB_OBJECT_H_
 
 #include "taggedpointer.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
-/*
- * memory map:
- *   +-----------+
- *   |  padding  |
- *   +-----------+
- *   |   ameta   |
- *   +-----------+
- *   | aobj_meta |
- *   +-----------+
- *   |  members  |
- *   +-----------+
- */
-
 typedef void *aobj;
 
 typedef aobj (*aobj_init_func)(void *ptr, void *data);
 typedef void (*aobj_clean_func)(aobj id);
 
-// times of 8 byte
 typedef struct aobj_meta {
   uint32_t isa;
-  uint32_t refcnt;
   aobj_clean_func clean;
-  char object[0];
 } aobj_meta_s, *aobj_meta_t;
 
-#define aobj_meta(ptr) ((aobj_meta_t)((char*)(ptr) - sizeof(aobj_meta_s)))
+ALIB_EXP_DECL aobj _aobj_alloc(size_t size, aobj_init_func init, void *data);
+ALIB_EXP_DECL aobj _aobj_init(void *ptr, aobj_meta_t meta);
+ALIB_EXP_DECL void _aobj_retain(aobj id);
+ALIB_EXP_DECL void _aobj_release(aobj id);
 
-aobj _aobj_alloc(size_t size, aobj_init_func init, void *data);
-#define aobj_alloc(type, init) _aobj_alloc(sizeof(type), init, NULL)
-#define aobj_alloc_with(type, init, data) _aobj_alloc(sizeof(type), init, data)
+
+// alib object system api
+// ===============================
+
+#define aobj_alloc(type, init) \
+  _aobj_alloc(sizeof(type), init, NULL)
+#define aobj_alloc_with(type, init, data) \
+  _aobj_alloc(sizeof(type), init, data)
 #define aobj_alloc_with_ex(type, init, data, size) \
   _aobj_alloc(sizeof(type) + (size), init, data)
 
-aobj aobj_init(void *ptr, aobj_meta_t meta);
+#define aobj_init _aobj_init
 
-void aobj_retain(aobj id);
-void aobj_release(aobj id);
+#define _retain(id) _aobj_retain(id)
+#define _release(id) _aobj_release(id)
 
-#define _retain(id) aobj_retain(id)
-#define _release(id) aobj_release(id)
+// Note: we need a filed 'uint32_t magic' for mark object
+#define aclass(type, ...) \
+struct type; \
+typedef struct type *type##_t; \
+typedef struct type { \
+  uint32_t magic; \
+  __VA_ARGS__ \
+} type##_s;
 
-#define _(type, id, message, ...) __(id, type##_##message, ##__VA_ARGS__)
+#define afunc_delc(type, message, rtype, ...) \
+  ALIB_EXP_DECL rtype type##_##message ( __VA_ARGS__ )
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+#define afunc_defn(type, message, rtype, ...) \
+  ALIB_EXP_DEFN rtype type##_##message ( __VA_ARGS__ )
+
+#define _(type, id, message, ...) \
+  __(id, type##_##message, ##__VA_ARGS__)
 
 #endif //_ALIB_OBJECT_H_
