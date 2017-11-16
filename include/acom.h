@@ -29,7 +29,7 @@ extern "C" {
 
 #ifdef _WIN32
 #define container_of(ptr, type, member) \
-  ((type *)((char *)ptr - offsetof(type,member)))
+  ((type *)((char *)ptr - offset_of(type,member)))
 #else
 #define container_of(ptr, type, member) ({ \
   const typeof(((type *)0)->member) *__mptr = (ptr); \
