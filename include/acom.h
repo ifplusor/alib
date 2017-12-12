@@ -25,6 +25,10 @@
 extern "C" {
 #endif /* __cplusplus */
 
+#if defined(_WIN32) && !defined(__cplusplus)
+#define inline __inline
+#endif
+
 #define offset_of(type, member) ((size_t) &((type *)0)->member)
 
 #ifdef _WIN32
