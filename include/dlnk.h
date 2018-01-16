@@ -1,11 +1,15 @@
-//
-// Created by james on 10/13/17.
-//
+/**
+ * dlnk.h - doubly linked list
+ */
 
 #ifndef _ALIB_DOUBLY_LINKED_H_
 #define _ALIB_DOUBLY_LINKED_H_
 
 #include "acom.h"
+
+
+//
+// doubly linked cycle list
 
 struct doubly_linked_node;
 typedef struct doubly_linked_node *dlnk_node_t;
@@ -30,6 +34,10 @@ static inline dlnk_node_t dlnk_delete(dlnk_node_t node) {
   node->back->forw = node->forw;
   return node;
 }
+
+
+//
+// double-ended queue
 
 typedef dlnk_node_s deque_node_s;
 typedef dlnk_node_t deque_node_t;
@@ -59,5 +67,6 @@ typedef dlnk_node_t deque_node_t;
 
 #define deque_peek_front(deque, type, member) \
   (deque_empty(deque) ? NULL : container_of((deque)->forw, type, member))
+
 
 #endif //_ALIB_DOUBLY_LINKED_H_

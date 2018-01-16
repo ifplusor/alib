@@ -1,6 +1,6 @@
-//
-// Created by James on 2017/9/30.
-//
+/**
+ * stream.h - input stream
+ */
 
 #ifndef _ALIB_STREAM_H_
 #define _ALIB_STREAM_H_
@@ -10,6 +10,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+//
+// stream api
 
 struct stream;
 typedef struct stream *stream_t;
@@ -42,11 +45,14 @@ int stream_getc(stream_t self);
 int stream_ungetc(stream_t self, int c);
 void stream_rewind(stream_t self);
 
+
+// file stream
 typedef struct file_stream {
   stream_s header;
   FILE *fp;
 } file_stream_s, *file_stream_t;
 
+// string stream
 typedef struct string_stream {
   stream_s header;
   char *str;

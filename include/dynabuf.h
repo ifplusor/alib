@@ -1,6 +1,6 @@
-//
-// Created by james on 9/28/17.
-//
+/**
+ * dynabuf.h - dynamic string buffer
+ */
 
 #ifndef _ALIB_DYNABUF_H_
 #define _ALIB_DYNABUF_H_
@@ -44,14 +44,9 @@ strcur_s dynabuf_empty_cur(dynabuf_t self);
 bool dynabuf_empty(dynabuf_t self);
 
 strcur_s dynabuf_write(dynabuf_t self, const char *src, size_t len);
-strcur_s dynabuf_write_with_zero(dynabuf_t self,
-                                    const char *src,
-                                    size_t len);
+strcur_s dynabuf_write_with_zero(dynabuf_t self, const char *src, size_t len);
 
-int dynabuf_consume_until(dynabuf_t self,
-                          stream_t stream,
-                          const char *delim,
-                          strpos_t out_pos);
+int dynabuf_consume_until(dynabuf_t self, stream_t stream, const char *delim, strpos_t out_pos);
 
 #ifdef __cplusplus
 }

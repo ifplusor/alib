@@ -1,38 +1,45 @@
-//
-// Created by james on 10/16/17.
-//
+/**
+ * atypes.h - alib types define header
+ */
 
 #ifndef _ALIB_TYPES_H_
 #define _ALIB_TYPES_H_
 
+// include standard library definition
 #include <stddef.h>
 
+// define EOF
 #ifdef _WIN32
 #define EOL "\r\n"
 #else
 #define EOL "\n"
 #endif
 
+// define inline alias for c in win32
 #if defined(_WIN32) && !defined(__cplusplus)
 #define inline __inline
 #endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
 
+//
 // define base types:
 //   sint8_t, sint16_t, sint32_t, sint64_t
 //   uint8_t, uint16_t, uint32_t, uint64_t
-//   sptr_t, uptr_t
+//   sptr_t,  uptr_t
 
 #include <stdint.h>
+
+// design for Standard C Language
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
 typedef int8_t sint8_t;
 typedef int16_t sint16_t;
 typedef int32_t sint32_t;
 typedef int64_t sint64_t;
 
+// int with pointer length
 #ifdef _WIN32
 #include <wtypes.h>
 typedef LONG_PTR  sptr_t;
@@ -45,6 +52,14 @@ typedef sint32_t sptr_t;
 typedef uint32_t uptr_t;
 #endif
 
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+
+
+//
+// define boolean type:
+
 #ifndef _WIN32
 #include <stdbool.h>
 #endif
@@ -55,25 +70,34 @@ typedef uint32_t uptr_t;
 #define false 0
 #endif /* __bool_true_false_are_defined */
 
+
+//
+// define some marcos:
+
 #define LOW8BIT(x) ((uint32_t)(x) & 0xFF)
 
 #ifdef  FOUR_CHARS_TO_INT
 #error Conflicting Macro "FOUR_CHARS_TO_INT"
-#endif
-
+#else
 #define FOUR_CHARS_TO_INT(c1, c2, c3, c4) (LOW8BIT(c1) << 24 | LOW8BIT(c2) << 16 | LOW8BIT(c3) << 8 | LOW8BIT(c4))
+#endif
 
 #ifdef  TW0_CHARS_TO_INT
 #error Conflicting Macro "TW0_CHARS_TO_INT"
+#else
+#define TW0_CHARS_TO_INT(c1, c2) (LOW8BIT(c1) << 8 | LOW8BIT(c2))
 #endif
 
-#define TW0_CHARS_TO_INT(c1, c2) (LOW8BIT(c1) << 8 | LOW8BIT(c2))
-
+// magic number
 #define AMEM_MAGIC FOUR_CHARS_TO_INT('A', 'M', 'e', 'm')
 #define AOBJ_MAGIC FOUR_CHARS_TO_INT('A', 'O', 'b', 'j')
 
+// call function with param
 #define __(obj, func, ...) func(obj, ##__VA_ARGS__)
 
+
+//
+// define declare modifiers:
 
 #ifndef ALIB_EXP_DECL
 #  ifdef __cplusplus
@@ -85,14 +109,13 @@ typedef uint32_t uptr_t;
 #  endif
 #endif
 
-#ifndef ALIB_CALL_CONVENTION
-#define ALIB_CALL_CONVENTION
+#ifndef ALIB_CALL_CNV
+#define ALIB_CALL_CNV
 #endif
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
+// include object subsystem header
 #include "obj/aobj.h"
+
 
 #endif //_ALIB_TYPES_H_

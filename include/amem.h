@@ -1,6 +1,6 @@
-//
-// Created by james on 10/16/17.
-//
+/**
+ * amem.h - memory management
+ */
 
 #ifndef _ALIB_MEMORY_H_
 #define _ALIB_MEMORY_H_
@@ -11,7 +11,13 @@
 extern "C" {
 #endif /* __cplusplus */
 
+#ifdef AMEM_ALIGN
+#if AMEM_ALIGN < 3
+#error The align factor must greater than or equal to 3
+#endif
+#else
 #define AMEM_ALIGN 3
+#endif
 
 #define ALIGN_BASE(b) (((uptr_t)0x01 << (b)) - 1)
 #define ALIGN_MASK(b) (~ALIGN_BASE(b))

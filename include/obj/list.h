@@ -1,3 +1,7 @@
+/**
+ * list.h - list object
+ */
+
 #ifndef _ALIB_LIST_H_
 #define _ALIB_LIST_H_
 

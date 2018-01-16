@@ -33,6 +33,7 @@ void dstr_clean(aobj id) {
 dstr_t dstr(strlen_t str) {
   dstr_t id = aobj_alloc_with_ex(dstr_s, dstr_init, str, str->len + 1);
   if (id != NULL) {
+    // TODO
   }
   return id;
 }

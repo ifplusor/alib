@@ -1,3 +1,7 @@
+/**
+ * dynapool.h - dynamic node pool
+ */
+
 #ifndef _ALIB_NODE_POOL_H_
 #define _ALIB_NODE_POOL_H_
 

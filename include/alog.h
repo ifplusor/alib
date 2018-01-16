@@ -1,5 +1,8 @@
-/*
- * trace, debug, info, warn, error, fatal
+/**
+ * alog.h - log utils
+ *
+ * Note:
+ *   alog provide 6 level: trace, debug, info, warn, error, fatal
  */
 #ifndef _ALIB_LOG_H_
 #define _ALIB_LOG_H_
@@ -18,22 +21,22 @@ typedef enum alog_level {
 #define ALOG_PREFIX(level, prefix) do { \
   switch (level) { \
   case fatal: \
-    prefix = "FATAL"; \
+    (prefix) = "FATAL"; \
     break; \
   case error: \
-    prefix = "ERROR"; \
+    (prefix) = "ERROR"; \
     break; \
   case warn: \
-    prefix = "WARN"; \
+    (prefix) = "WARN"; \
     break; \
   case info: \
-    prefix = "INFO"; \
+    (prefix) = "INFO"; \
     break; \
   case debug: \
-    prefix = "DEBUG"; \
+    (prefix) = "DEBUG"; \
     break; \
   case trace: \
-    prefix = "TRACE"; \
+    (prefix) = "TRACE"; \
     break; \
   }; \
 } while(0)
@@ -51,10 +54,10 @@ typedef enum alog_level {
 #define ALOG_FORMAT(level, stream, fmt, ...) do { \
   char *prefix; \
   ALOG_PREFIX(level, prefix); \
-  fprintf(stream, "%s(%d) ", __FUNCTION__, __LINE__); \
-  fprintf(stream, "%s: ", prefix); \
-  fprintf(stream, fmt, __VA_ARGS__); \
-  fprintf(stream, "\n"); \
+  char *format = malloc(strlen(fmt) + 13); \
+  sprintf(format, "%%s(%%d) %%s: %s\\n", fmt); \
+  fprintf(stream, format, __FUNCTION__, __LINE__, prefix, __VA_ARGS__); \
+  free(format); \
 } while(0)
 #endif
 

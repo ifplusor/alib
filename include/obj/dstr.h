@@ -1,8 +1,9 @@
-//
-// Created by james on 10/22/17.
-//
-// Note: dstr is designed as not null-terminated string, but it is compatible
-//
+/**
+ * dstr.h - dynamic string object
+ *
+ * Note:
+ *   dstr is designed as not null-terminated string, but it is compatible
+ */
 
 #ifndef _ALIB_DYNASTR_H_
 #define _ALIB_DYNASTR_H_

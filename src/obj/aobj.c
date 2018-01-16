@@ -17,7 +17,8 @@
  *   +-----------+
  */
 
-// times of 8 byte
+// this header is invisible for developer
+// it size is times of 8 byte
 typedef struct aobj_hdr {
   uint32_t isa;
   uint32_t refcnt;
@@ -29,7 +30,7 @@ typedef struct aobj_hdr {
 
 
 aobj _aobj_alloc(size_t size, aobj_init_func init, void *data) {
-  aobj_hdr_t meta = amalloc(size + sizeof(aobj_hdr_s));
+  aobj_hdr_t meta = amalloc(size + sizeof(aobj_hdr_s)); // obj size + header size
   return init(meta, data);
 }
 

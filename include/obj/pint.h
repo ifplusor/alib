@@ -1,7 +1,15 @@
+/**
+ * pint.h - pointer integer object
+ */
+
 #ifndef _ALIB_PINT_H_
 #define _ALIB_PINT_H_
 
 #include "obj/aobj.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef void *pint_t;
 
@@ -11,5 +19,9 @@ typedef void *pint_t;
 #define pint_minus(a, b) ((pint_t)TAG_INTEGER(GET_INTEGER(a) - GET_INTEGER(b)))
 #define pint_times(a, b) ((pint_t)TAG_INTEGER(GET_INTEGER(a) * GET_INTEGER(b)))
 #define pint_over(a, b) ((pint_t)TAG_INTEGER(GET_INTEGER(a) / GET_INTEGER(b)))
+
+#ifdef __cplusplus
+};
+#endif
 
 #endif //_ALIB_PINT_H_

@@ -1,8 +1,7 @@
-//
-// Created by james on 6/16/17.
-//
-/*
- * API 语义约定:
+/**
+ * acom.h - alib common header
+ *
+ * API 语义命名约定:
  *   1. alloc/free            分配、释放对象内存
  *   2. init/clean/reset      初始化、释放缓存、重置状态
  *   3. construct/destruct    构造、析构对象

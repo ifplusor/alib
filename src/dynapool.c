@@ -7,6 +7,7 @@ dynapool_t dynapool_construct(size_t node_size) {
   node_size = node_size < sizeof(deque_node_s) ? sizeof(deque_node_s) : node_size;
   node_size = ROUND_UP_8(node_size); // 8 byte aligned
 
+  // alloc some node
   dynapool_t pool = amalloc(sizeof(dynapool_s) + node_size * DYNAPOOL_INIT_SIZE);
   if (pool == NULL) return NULL;
 
@@ -41,6 +42,7 @@ void *dynapool_alloc_node(dynapool_t pool) {
 
     // extend memory
     if (pool->_nodepool[pool->alloc_cur] == NULL) {
+      // alloc double memory
       pool->_nodepool[pool->alloc_cur] = amalloc(pool->node_size * (pool->alloc_size << (pool->alloc_cur - 1)));
       if (pool->_nodepool[pool->alloc_cur] == NULL) return NULL;
     }

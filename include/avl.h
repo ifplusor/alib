@@ -1,6 +1,6 @@
-//
-// Created by james on 9/28/17.
-//
+/**
+ * avl.h - AVL tree
+ */
 
 #ifndef _ALIB_AVL_H_
 #define _ALIB_AVL_H_

@@ -1,6 +1,9 @@
-//
-// Created by james on 10/16/17.
-//
+/**
+ * astr.h - string utils
+ *
+ * Note:
+ *   this have some features which extend standard library
+ */
 
 #ifndef _ALIB_STRING_H_
 #define _ALIB_STRING_H_
