@@ -36,13 +36,8 @@ typedef struct str_len {
 extern const strlen_s strlen_empty;
 #define str_empty strlen_empty.ptr
 
-// str_cur
+// str_pos
 // ========================
-
-typedef union str_cur {
-  char *ptr;
-  size_t idx;
-} strcur_s, *strcur_t;
 
 typedef struct str_pos {
   size_t so, eo;

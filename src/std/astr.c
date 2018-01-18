@@ -4,7 +4,7 @@
 
 #include "std/astr.h"
 
-const strlen_s strlen_empty = {.ptr = "", .len = 0};
+const strlen_s strlen_empty = {.ptr = "", .len = 0}; // "" have \0
 
 // extend for stand library
 // ================================

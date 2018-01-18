@@ -7,15 +7,6 @@
 // dynamic buffer
 // ========================================
 
-const static size_t dynabuf_extend_space_size =
-    ROUND_UP_16(DYNABUF_EXTEND_SPACE_SIZE);
-
-
-static inline size_t dynabuf_extend_size(size_t old_size, size_t insert_size) {
-  return old_size + (insert_size / dynabuf_extend_space_size + 1)
-      * dynabuf_extend_space_size;
-}
-
 dynabuf_t dynabuf_alloc() {
   dynabuf_t buf = malloc(sizeof(dynabuf_s));
   if (buf != NULL) {
@@ -26,20 +17,21 @@ dynabuf_t dynabuf_alloc() {
 
 bool dynabuf_free(dynabuf_t self) {
   if (self == NULL) return false;
-  free(self->_buffer);
+  dynabuf_clean(self);
   free(self);
   return true;
 }
 
-bool dynabuf_init(dynabuf_t self, size_t size, bool fixed) {
+/**
+ * dynabuf_init - initialize
+ * @param self - dynabuf object
+ * @param size - initial size
+ */
+bool dynabuf_init(dynabuf_t self, size_t size) {
   if (self == NULL) return false;
 
+  // init with '\0'
   self->_cur = 1;
-  self->_prop = dynabuf_prop_empty;
-  if (fixed) {
-    self->_prop |= dynabuf_prop_fixed;
-  }
-
   if (size != 0) {
     // size 为 16 的倍数
     size = ROUND_UP_16(size + 1);
@@ -71,76 +63,50 @@ bool dynabuf_reset(dynabuf_t self) {
   return true;
 }
 
-char *dynabuf_content(dynabuf_t self, strcur_s cursor) {
-  if (self->_prop & dynabuf_prop_fixed) {
-    return cursor.ptr;
-  } else {
-    return self->_buffer + cursor.idx;
-  }
+/**
+ * dynabuf_content - 返回 dynabuf 中的内容
+ */
+strlen_s dynabuf_content(dynabuf_t self) {
+  return (strlen_s) {
+      .ptr = self->_buffer + 1,
+      .len = self->_cur - 1
+  };
 }
 
+/**
+ * dynabuf_splite - 截取 dynabuf 中由 pos 指定的区段
+ */
 strlen_s dynabuf_split(dynabuf_t self, strpos_s pos) {
-  strlen_s ret;
-  ret.ptr = self->_buffer + pos.so;
-  ret.len = pos.eo - pos.so;
-  return ret;
-}
-
-strcur_s dynabuf_related(dynabuf_t self, strcur_s base, char *related) {
-  if (self->_prop & dynabuf_prop_fixed) {
-    return (strcur_s) {.ptr=related};
-  } else {
-    return (strcur_s) {
-        .idx = base.idx + (related - dynabuf_content(self, base))
-    };
-  }
-}
-
-strcur_s dynabuf_cur2ptr(dynabuf_t self, strcur_s cursor) {
-  if (self->_prop & dynabuf_prop_fixed) {
-    return cursor;
-  } else {
-    return (strcur_s) {
-        .ptr = self->_buffer + cursor.idx
-    };
-  }
+  return (strlen_s) {
+      .ptr = self->_buffer + pos.so,
+      .len = pos.eo - pos.so
+  };
 }
 
 size_t dynabuf_length(dynabuf_t self) {
   return self->_cur - 1;
 }
 
-size_t dynabuf_cursor(dynabuf_t self) {
-  return self->_cur;
-}
-
-strcur_s dynabuf_empty_cur(dynabuf_t self) {
-  strcur_s ret;
-  if (self->_prop & dynabuf_prop_fixed)
-    ret.ptr = NULL;
-  else
-    ret.idx = 0;
-  return ret;
-}
-
 bool dynabuf_empty(dynabuf_t self) {
   return self->_cur == 1;
 }
 
-strcur_s dynabuf_write(dynabuf_t self, const char *src, size_t len) {
-//  if (self == NULL) return NULL;
+// string builder
+// =========================
 
+const static size_t dynabuf_extend_space_size = ROUND_UP_16(DYNABUF_EXTEND_SPACE_SIZE);
+
+static inline size_t dynabuf_extend_size(size_t old_size, size_t insert_size) {
+  return old_size + (insert_size / dynabuf_extend_space_size + 1) * dynabuf_extend_space_size;
+}
+
+static inline void dynabuf_adjust_memory(dynabuf_t self, size_t len) {
   if (self->_cur + len > self->_size) {
-    if (self->_prop & dynabuf_prop_fixed) {
-      fprintf(stderr, "%s(%d) - fatal: memory error!\n", __FILE__, __LINE__);
-      exit(-1);
-    }
-
+    // extend buffer
     size_t new_size = dynabuf_extend_size(self->_size, len);
     char *new_buffer = malloc(new_size);
     if (new_buffer == NULL) {
-      fprintf(stderr, "%s(%d) - fatal: memory error!\n", __FILE__, __LINE__);
-      exit(-1);
+      ALOG_FATAL("memory error!");
     }
     memcpy(new_buffer, self->_buffer, self->_cur);
     if (self->_buffer != str_empty)
@@ -148,86 +114,58 @@ strcur_s dynabuf_write(dynabuf_t self, const char *src, size_t len) {
     self->_buffer = new_buffer;
     self->_size = new_size;
   }
-
-  strcur_s ret;
-  if (len > 0) {
-    if (self->_prop & dynabuf_prop_fixed) {
-      ret.ptr = memcpy(self->_buffer + self->_cur, src, len);
-    } else {
-      ret.idx = self->_cur;
-      memcpy(self->_buffer + self->_cur, src, len);
-    }
-    self->_cur += len;
-  } else {
-    ret = dynabuf_empty_cur(self);
-  }
-
-  return ret;
 }
 
-strcur_s dynabuf_write_with_zero(dynabuf_t self, const char *src, size_t len) {
+char *dynabuf_write(dynabuf_t self, const char *src, size_t len) {
 //  if (self == NULL) return NULL;
 
-  if (self->_cur + len + 1 > self->_size) {
-    if (self->_prop & dynabuf_prop_fixed) {
-      fprintf(stderr, "%s(%d) - fatal: memory error!\n", __FILE__, __LINE__);
-      exit(-1);
-    }
+  dynabuf_adjust_memory(self, len);
 
-    size_t new_size = dynabuf_extend_size(self->_size, len + 1);
-    char *new_buffer = malloc(new_size);
-    if (new_buffer == NULL) {
-      fprintf(stderr, "%s(%d) - fatal: memory error!\n", __FILE__, __LINE__);
-      exit(-1);
-    }
-    memcpy(new_buffer, self->_buffer, self->_cur);
-    if (self->_buffer != str_empty)
-      free(self->_buffer);
-    self->_buffer = new_buffer;
-    self->_size = new_size;
-  }
+  char *dest = memcpy(self->_buffer + self->_cur, src, len);
+  self->_cur += len;
 
-  strcur_s ret;
-  if (len > 0) {
-    if (self->_prop & dynabuf_prop_fixed) {
-      ret.ptr = memcpy(self->_buffer + self->_cur, src, len);
-    } else {
-      ret.idx = self->_cur;
-      memcpy(self->_buffer + self->_cur, src, len);
-    }
-    self->_cur += len;
-  } else {
-    if (self->_prop & dynabuf_prop_fixed) {
-      ret.ptr = self->_buffer + self->_cur;
-    } else {
-      ret.idx = self->_cur;
-    }
-  }
+  return dest;
+}
+
+char *dynabuf_write_eos(dynabuf_t self, const char *src, size_t len) {
+//  if (self == NULL) return NULL;
+
+  dynabuf_adjust_memory(self, len + 1);
+
+  char *dest = memcpy(self->_buffer + self->_cur, src, len);
+  self->_cur += len;
 
   // append '\0'
   self->_buffer[self->_cur] = '\0';
   self->_cur++;
-  return ret;
+
+  return dest;
 }
 
-int dynabuf_consume_until(dynabuf_t self,
-                          stream_t stream,
-                          const char *delim,
-                          strpos_t out_pos) {
+// parser
+// =========================
+
+/**
+ * dynabuf_consume_until - consume chars from stream until specific delimiters or EOF is arrived
+ */
+int dynabuf_consume_until(dynabuf_t self, stream_t stream, const char *delim, strpos_t out_pos) {
   unsigned char buf[256], *pb = buf;
   unsigned char *s = (unsigned char*) delim;
   int ch;
 
-  if (out_pos) out_pos->so = dynabuf_cursor(self);
+  // start position
+  if (out_pos) out_pos->so = self->_cur;
 
   if (delim == NULL || delim[0] == '\0') {
+    // empty delimiter
     ch = 0;
   } else {
     if (delim[1] == '\0') {
+      // only one delimiter
       while ((ch = stream_getc(stream)) != EOF && ch != *s) {
         *(pb++) = (unsigned char) ch;
         if ((pb - buf) == 256) {
-          dynabuf_write(self, buf, 256);
+          dynabuf_write(self, (char*)buf, 256);
           pb = buf;
         }
       }
@@ -245,16 +183,17 @@ int dynabuf_consume_until(dynabuf_t self,
       while ((ch = stream_getc(stream)) != EOF && !p[ch]) {
         *(pb++) = (unsigned char) ch;
         if ((pb - buf) == 256) {
-          dynabuf_write(self, buf, 256);
+          dynabuf_write(self, (char*)buf, 256);
           pb = buf;
         }
       }
     }
 
-    dynabuf_write(self, buf, pb - buf);
+    dynabuf_write(self, (char*)buf, pb - buf);
   }
 
-  if (out_pos) out_pos->eo = dynabuf_cursor(self);
+  // end position
+  if (out_pos) out_pos->eo = self->_cur;
 
   return ch;
 }
