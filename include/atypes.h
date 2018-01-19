@@ -52,6 +52,8 @@ typedef sint32_t sptr_t;
 typedef uint32_t uptr_t;
 #endif
 
+typedef unsigned char uchar;
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

@@ -4,38 +4,8 @@
 
 #include "stream.h"
 
-bool stream_destruct(stream_t self) {
-  if (self == NULL) return false;
-  return self->_func->sf_destruct(self);
-}
-
-int stream_getc(stream_t self) {
-  return self->_func->sf_getc(self);
-}
-
-int stream_ungetc(stream_t self, int c) {
-  return self->_func->sf_ungetc(self, c);
-}
-
-void stream_skip_bom(stream_t self) {
-  // filter bom
-  int ch;
-  if ((ch = stream_getc(self)) != 0xef) {
-    if (ch != EOF) stream_ungetc(self, ch);
-  } else if ((ch = stream_getc(self)) != 0xbb) {
-    if (ch != EOF) stream_ungetc(self, ch);
-    stream_ungetc(self, 0xef);
-  } else if ((ch = stream_getc(self)) != 0xbf) {
-    if (ch != EOF) stream_ungetc(self, ch);
-    stream_ungetc(self, 0xbb);
-    stream_ungetc(self, 0xef);
-  }
-}
-
-void stream_rewind(stream_t self) {
-  self->_func->sf_rewind(self);
-  stream_skip_bom(self);
-}
+// file stream
+// ========================
 
 bool file_stream_destruct(stream_t self) {
   if (self == NULL) return false;
@@ -85,6 +55,9 @@ stream_t file_stream_construct(const char *path) {
   return NULL;
 }
 
+// string stream
+// ========================
+
 bool string_stream_destruct(stream_t self) {
   if (self == NULL) return false;
   string_stream_t ss = (string_stream_t) self;
@@ -99,9 +72,10 @@ int string_stream_getc(stream_t self) {
 }
 
 int string_stream_ungetc(stream_t self, int c) {
+  if (c < 0 || c >= 256) return EOF;
   string_stream_t ss = (string_stream_t) self;
   if (ss->iter.cur <= 0) return EOF;
-  return ss->iter.ptr[--ss->iter.cur] = (unsigned char) c;
+  return ss->iter.ptr[--ss->iter.cur] = (uchar) c;
 }
 
 void string_stream_rewind(stream_t self) {
@@ -135,6 +109,42 @@ stream_t string_stream_construct(strlen_t str) {
   } while(0);
   if (dup != NULL) free(dup);
   return NULL;
+}
+
+// stream api
+// ========================
+
+bool stream_destruct(stream_t self) {
+  if (self == NULL) return false;
+  return self->_func->sf_destruct(self);
+}
+
+int stream_getc(stream_t self) {
+  return self->_func->sf_getc(self);
+}
+
+int stream_ungetc(stream_t self, int c) {
+  return self->_func->sf_ungetc(self, c);
+}
+
+void stream_skip_bom(stream_t self) {
+  // filter bom
+  int ch;
+  if ((ch = stream_getc(self)) != 0xef) {
+    if (ch != EOF) stream_ungetc(self, ch);
+  } else if ((ch = stream_getc(self)) != 0xbb) {
+    if (ch != EOF) stream_ungetc(self, ch);
+    stream_ungetc(self, 0xef);
+  } else if ((ch = stream_getc(self)) != 0xbf) {
+    if (ch != EOF) stream_ungetc(self, ch);
+    stream_ungetc(self, 0xbb);
+    stream_ungetc(self, 0xef);
+  }
+}
+
+void stream_rewind(stream_t self) {
+  self->_func->sf_rewind(self);
+  stream_skip_bom(self);
 }
 
 stream_t stream_construct(stream_type_e type, void *src) {
