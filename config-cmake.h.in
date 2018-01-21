@@ -1,5 +1,10 @@
 /* config.h for CMake builds */
 
+/* compile options */
 #cmakedefine01 ALIB_DEBUG
+#cmakedefine   __TYPEOF__
+
+/* dependent library flags */
+#cmakedefine   __PTHREAD__
 
 /* end config.h for CMake builds */

@@ -14,6 +14,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "config.h"
+
 #include "alog.h"
 #include "obj/aobj.h"
 #include "std/astr.h"
@@ -28,11 +30,15 @@ extern "C" {
 #define inline __inline
 #endif
 
+#ifdef offsetof
+#define offset_of offsetof
+#else
 #define offset_of(type, member) ((size_t) &((type *)0)->member)
+#endif
 
-#ifdef _WIN32
+#ifndef __TYPEOF__
 #define container_of(ptr, type, member) \
-  ((type *)((char *)ptr - offset_of(type,member)))
+  ((type *)((char *)(ptr) - offset_of(type,member)))
 #else
 #define container_of(ptr, type, member) ({ \
   const typeof(((type *)0)->member) *__mptr = (ptr); \

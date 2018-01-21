@@ -3,15 +3,22 @@ project(alib)
 
 set(CMAKE_C_STANDARD 99)
 
-#option(ALIB_DEBUG "enable debug alib." OFF)
-#CONFIGURE_FILE(config-cmake.h.in
-#        ${PROJECT_SOURCE_DIR}/include/config.h
-#        @ONLY)
-#ADD_DEFINITIONS(-DALIB_HAVE_CONFIG_H)
+option(ALIB_DEBUG "enable alib debug flag." OFF)
+option(__TYPEOF__ "enable typeof feature." OFF)
+
+if (MINGW)
+    set(__PTHREAD__ ON)
+endif (MINGW)
+
+CONFIGURE_FILE(config-cmake.h.in
+        ${PROJECT_SOURCE_DIR}/include/config.h
+        @ONLY)
+
 
 add_subdirectory(third_party)
 
 set(alib_HEADER_FILES
+        include/config.h
         include/atypes.h
         include/alog.h
         include/atomicvar.h
@@ -28,7 +35,8 @@ set(alib_HEADER_FILES
         include/avl.h
         include/stream.h
         include/dynabuf.h
-        include/utf8.h)
+        include/utf8.h
+        include/threadlocal.h)
 
 set(alib_SOURCE_FILES
         src/amem.c
@@ -42,7 +50,8 @@ set(alib_SOURCE_FILES
         src/avl.c
         src/stream.c
         src/dynabuf.c
-        src/utf8.c)
+        src/utf8.c
+        src/threadlocal.c)
 
 if (WIN32)
     list(APPEND alib_SOURCE_FILES src/amem_win.cpp)
