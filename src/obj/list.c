@@ -6,13 +6,13 @@
 
 void list_clean(aobj id);
 
-static aobj_meta_s list_meta = {
-    .isa = FOUR_CHARS_TO_INT('L', 'I', 'S', 'T'),
-    .clean = list_clean,
-};
+ameta(list,
+  FOUR_CHARS_TO_INT('L', 'I', 'S', 'T'),
+  list_clean
+)
 
 aobj list_init(void *ptr, void *data) {
-  list_t id = aobj_init(ptr, &list_meta);
+  list_t id = aobj_init(list, ptr);
   if (id) {
     id->car = id->cdr = NULL;
   }

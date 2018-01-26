@@ -19,7 +19,7 @@
 
 // this header is invisible for developer
 // it size is times of 8 byte
-typedef struct aobj_hdr {
+typedef struct _aobj_hdr {
   uint32_t isa;
   uint32_t refcnt;
   aobj_clean_func clean;
@@ -63,4 +63,13 @@ void _aobj_release(aobj id) {
       afree(hdr);
     }
   }
+}
+
+bool _aobj_instanceof(aobj id, uint32_t identifier) {
+  if (id == NULL) return false;
+  if (TAGGED_AOBJECT(id)) {
+    aobj_hdr_t hdr = aobj_hdr(id);
+    return hdr->isa == identifier;
+  }
+  return false;
 }

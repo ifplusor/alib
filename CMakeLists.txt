@@ -62,6 +62,11 @@ add_library(alib STATIC
 target_include_directories(alib
         PUBLIC include)
 
+if ((NOT WIN32) OR __PTHREAD__)
+    target_link_libraries(alib
+            PUBLIC pthread)
+endif()
+
 if (UNIX)
     target_compile_options(alib
             PRIVATE -fPIC)
