@@ -1,5 +1,7 @@
 /**
  * stream.h - input stream
+ *
+ * @author James Yin <ywhjames@hotmail.com>
  */
 
 #ifndef _ALIB_STREAM_H_

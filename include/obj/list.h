@@ -1,5 +1,7 @@
 /**
  * list.h - list object
+ *
+ * @author James Yin <ywhjames@hotmail.com>
  */
 
 #ifndef _ALIB_LIST_H_

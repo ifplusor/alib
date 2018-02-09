@@ -1,5 +1,7 @@
 /**
  * amem.h - memory management
+ *
+ * @author James Yin <ywhjames@hotmail.com>
  */
 
 #ifndef _ALIB_MEMORY_H_

@@ -1,8 +1,11 @@
 /**
- * dstr.h - string object which store in dictionary
+ * dstr.h - string object (which be stored in dictionary)
+ *
+ * @author James Yin <ywhjames@hotmail.com>
  *
  * Note:
- *   dstr is designed as not null-terminated string, but it is compatible
+ *   dstr is designed as not null-terminated string, but it is compatible.
+ *   now, dstr is constant, and we store it in a global dictionary
  */
 
 #ifndef _ALIB_DICTSTR_H_

@@ -1,5 +1,7 @@
 /**
  * dynapool.h - dynamic node pool
+ *
+ * @author James Yin <ywhjames@hotmail.com>
  */
 
 #ifndef _ALIB_NODE_POOL_H_

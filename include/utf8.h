@@ -1,5 +1,7 @@
 /**
  * utf8.h - utf8 utils
+ *
+ * @author James Yin <ywhjames@hotmail.com>
  */
 
 #ifndef _ALIB_UTF8_H_

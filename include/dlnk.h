@@ -1,5 +1,7 @@
 /**
  * dlnk.h - doubly linked list
+ *
+ * @author James Yin <ywhjames@hotmail.com>
  */
 
 #ifndef _ALIB_DOUBLY_LINKED_H_

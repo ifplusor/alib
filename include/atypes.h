@@ -1,5 +1,7 @@
 /**
  * atypes.h - alib types define header
+ *
+ * @author James Yin <ywhjames@hotmail.com>
  */
 
 #ifndef _ALIB_TYPES_H_

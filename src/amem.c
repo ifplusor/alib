@@ -9,7 +9,7 @@
 #include <stdlib.h>
 
 #include "amem.h"
-#include "atomicvar.h"
+#include "atomic.h"
 
 #define PADDING_SIZE (ALIGN_BASE(AMEM_ALIGN) + sizeof(ameta_s))
 
@@ -17,11 +17,11 @@
   amem_align((char*)(base) + sizeof(ameta_s), AMEM_ALIGN)
 
 #define update_amalloc_stat_alloc(__n) do { \
-  atomicIncr(used_memory, __n); \
+  alib_add_fetch(used_memory, __n); \
 } while(0)
 
 #define update_amalloc_stat_free(__n) do { \
-  atomicDecr(used_memory, __n); \
+  alib_sub_fetch(used_memory, __n); \
 } while(0)
 
 static size_t used_memory = 0;
@@ -148,7 +148,7 @@ size_t amalloc_size(void *ptr) {
 
 size_t amalloc_used_memory(void) {
   size_t um;
-  atomicGet(used_memory, um);
+  alib_load_n(used_memory, um);
   return um;
 }
 

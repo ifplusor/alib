@@ -1,6 +1,8 @@
 /**
  * acom.h - alib common header
  *
+ * @author James Yin <ywhjames@hotmail.com>
+ *
  * API 语义命名约定:
  *   1. alloc/free            分配、释放对象内存
  *   2. init/clean/reset      初始化、释放缓存、重置状态

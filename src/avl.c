@@ -1,9 +1,12 @@
-//
-// Created by james on 9/28/17.
-//
-// reference:
-//    http://adtinfo.org/libavl.html/AVL-Trees.html
-//
+/**
+ * avl.c - avl tree implement
+ *
+ * @author James Yin <ywhjames@hotmail.com>
+ * @version 9/28/17
+ *
+ * reference:
+ *    http://adtinfo.org/libavl.html/AVL-Trees.html
+ */
 
 #include "avl.h"
 

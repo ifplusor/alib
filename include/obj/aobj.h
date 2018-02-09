@@ -1,6 +1,8 @@
 /**
  * aobj.h - object subsystem base header
  *
+ * @author James Yin <ywhjames@hotmail.com>
+ *
  * Note:
  *   尽管OOP的三大支柱是：封装、继承、多态。但我设计alib库，并不是要实现面向对象的语言特性（如果需要，为什么不直接使用面向对象语言？）。
  *   我们切入的核心是——内存管理，C开发者赖以生存的基本技能。
@@ -26,11 +28,13 @@ typedef void *aobj;  // void* 兼容原生指针
 
 typedef aobj (*aobj_init_func)(void *ptr, void *data);
 typedef void (*aobj_clean_func)(aobj id);
+typedef uint64_t (*aobj_hash_func)(aobj id);
 
 // 对象类型元数据
 typedef struct aobj_meta {
   uint32_t isa;           // type magic number
   aobj_clean_func clean;  // destruct function
+  aobj_hash_func hash;    // hash function
 } aobj_meta_s, *aobj_meta_t;
 
 ALIB_EXP_DECL aobj _aobj_alloc(size_t size, aobj_init_func init, void *data);
@@ -68,12 +72,13 @@ ALIB_EXP_DECL bool _aobj_instanceof(aobj id, uint32_t identifier);
 //
 // class declare/define macros:
 
-#define ameta(type, id, clean_func) \
+#define ameta(type, id, clean_func, ...) \
 const uint32_t _aobj_##type##_identifier = (id); \
 \
 static aobj_meta_s _aobj_##type##_meta = { \
   .isa = (id), \
-  .clean = clean_func \
+  .clean = clean_func, \
+  ##__VA_ARGS__ \
 };
 
 // Note: we need a filed 'uint32_t magic' for mark object

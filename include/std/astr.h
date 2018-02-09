@@ -1,6 +1,8 @@
 /**
  * astr.h - string utils
  *
+ * @author James Yin <ywhjames@hotmail.com>
+ *
  * Note:
  *   this have some features which extend standard library
  */

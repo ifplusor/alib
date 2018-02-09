@@ -1,5 +1,7 @@
 /**
  * avl.h - AVL tree
+ *
+ * @author James Yin <ywhjames@hotmail.com>
  */
 
 #ifndef _ALIB_AVL_H_
@@ -7,7 +9,9 @@
 
 #include "acom.h"
 
+#ifndef DEBUG_AVL
 #define DEBUG_AVL 0
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -35,8 +39,11 @@ typedef sptr_t (*avl_compare_func)(avl_node_t node, void *key);
 typedef avl_node_t (*avl_replace_func)(avl_node_t old, avl_node_t new);
 
 typedef struct avl {
+  // fields
   size_t len;
   avl_node_t root;
+
+  // delegate
   avl_compare_func compare;
   avl_replace_func replace;
 } avl_s, *avl_t;

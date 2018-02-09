@@ -1,8 +1,11 @@
-//
-// Created by james on 10/22/17.
-//
+/**
+ * dstr.c - string object implement
+ *
+ * @author James Yin <ywhjames@hotmail.com>
+ */
 
 #include "obj/dstr.h"
+#include "strie.h"
 
 void dstr_clean(aobj id);
 

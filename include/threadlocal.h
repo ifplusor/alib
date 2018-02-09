@@ -1,5 +1,7 @@
 /**
  * threadlocal.h - thread specific data
+ *
+ * @author James Yin <ywhjames@hotmail.com>
  */
 
 #ifndef _ALIB_THREADLOCAL_H_

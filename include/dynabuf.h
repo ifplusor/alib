@@ -1,6 +1,8 @@
 /**
  * dynabuf.h - dynamic string buffer
  *
+ * @author James Yin <ywhjames@hotmail.com>
+ *
  * Note:
  *   dynabuf is also string builder and stream parser
  */

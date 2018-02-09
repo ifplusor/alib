@@ -1,6 +1,8 @@
 /**
  * taggedpointer.h - tagged pointer
  *
+ * @author James Yin <ywhjames@hotmail.com>
+ *
  * Note：
  *   amem 中进行内存分配时，会使用对齐策略，因此我们可以直接指针的基础上做一些 hack
  */

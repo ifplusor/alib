@@ -1,6 +1,8 @@
 /**
  * alog.h - log utils
  *
+ * @author James Yin <ywhjames@hotmail.com>
+ *
  * Note:
  *   alog provide 6 level: trace, debug, info, warn, error, fatal
  */

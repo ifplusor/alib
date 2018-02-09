@@ -1,5 +1,7 @@
 /**
  * pint.h - pointer integer object
+ *
+ * @author James Yin <ywhjames@hotmail.com>
  */
 
 #ifndef _ALIB_PINT_H_
