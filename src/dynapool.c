@@ -8,73 +8,75 @@ dynapool_t dynapool_construct(size_t node_size) {
   node_size = ROUND_UP_8(node_size); // 8 byte aligned
 
   // alloc some node
-  dynapool_t pool = amalloc(sizeof(dynapool_s) + node_size * DYNAPOOL_INIT_SIZE);
-  if (pool == NULL) return NULL;
+  dynapool_t self = amalloc(sizeof(dynapool_s) + node_size * DYNAPOOL_INIT_SIZE);
+  if (self == NULL) return NULL;
 
-  pool->_nodepool[0] = pool->buf;
+  self->_node_pool[0] = self->buf;
   for (size_t i = 1; i < DYNAPOOL_REGION_SIZE; i++)
-    pool->_nodepool[i] = NULL;
+    self->_node_pool[i] = NULL;
 
-  pool->node_size = node_size;
-  pool->alloc_size = DYNAPOOL_INIT_SIZE;
+  self->node_size = node_size;
+  self->alloc_size = DYNAPOOL_INIT_SIZE;
 
-  dynapool_reset(pool);
+  dynapool_reset(self);
 
-  return pool;
+  return self;
 }
 
-bool dynapool_destruct(dynapool_t pool) {
-  if (pool != NULL) {
+bool dynapool_destruct(dynapool_t self) {
+  if (self != NULL) {
     for (size_t i = 1; i < DYNAPOOL_REGION_SIZE; i++)
-      afree(pool->_nodepool[i]);
-    afree(pool);
+      afree(self->_node_pool[i]);
+    afree(self);
   }
   return true;
 }
 
-void *dynapool_alloc_node(dynapool_t pool) {
-  deque_node_t deque = &pool->_sentinel;
+void *dynapool_alloc_node(dynapool_t self) {
+  deque_node_t deque = &self->_free_list;
   if (deque_empty(deque)) {
-    if (pool->alloc_cur >= DYNAPOOL_REGION_SIZE) {
-      fprintf(stderr, "%s(%d) - fatal: overflow in dynapool!", __FILE__, __LINE__);
-      exit(-1);
+    if (self->alloc_cur >= DYNAPOOL_REGION_SIZE) {
+      ALOG_FATAL("overflow in dynapool!");
     }
 
     // extend memory
-    if (pool->_nodepool[pool->alloc_cur] == NULL) {
-      // alloc double memory
-      pool->_nodepool[pool->alloc_cur] = amalloc(pool->node_size * (pool->alloc_size << (pool->alloc_cur - 1)));
-      if (pool->_nodepool[pool->alloc_cur] == NULL) return NULL;
+    if (self->_node_pool[self->alloc_cur] == NULL) {
+      // alloc memory to double
+      self->_node_pool[self->alloc_cur] = amalloc(self->node_size * (self->alloc_size << (self->alloc_cur - 1)));
+      if (self->_node_pool[self->alloc_cur] == NULL) return NULL;
     }
 
     // init memory
-    char *region = pool->_nodepool[pool->alloc_cur];
-    for (size_t j = 0; j < (pool->alloc_size << (pool->alloc_cur - 1)); j++) {
-      void *node = region + pool->node_size * j;
+    char *pool = self->_node_pool[self->alloc_cur];
+    for (size_t j = 0; j < (self->alloc_size << (self->alloc_cur - 1)); j++) {
+      void *node = pool + self->node_size * j;
       deque_push_back(deque, node, deque_node_s, forw);
     }
 
-    pool->alloc_cur++;
+    self->alloc_cur++;
   }
   return deque_pop_front(deque, deque_node_s, forw);
 }
 
-bool dynapool_free_node(dynapool_t pool, void *node) {
-  if (pool == NULL || node == NULL) return false;
-  deque_push_front(&pool->_sentinel, node, deque_node_s, forw);
+bool dynapool_free_node(dynapool_t self, void *node) {
+  if (self == NULL || node == NULL) return false;
+  deque_push_front(&self->_free_list, node, deque_node_s, forw);
   return true;
 }
 
-bool dynapool_reset(dynapool_t pool) {
-  if (pool == NULL) return false;
-  deque_node_t deque = &pool->_sentinel;
+// reset nodepool state, but not free memory
+bool dynapool_reset(dynapool_t self) {
+  if (self == NULL) return false;
+  deque_node_t deque = &self->_free_list;
   deque_init(deque);
 
   // for init memory
-  char *region = pool->_nodepool[0];
+  char *pool = self->_node_pool[0];
   for (size_t j = 0; j < DYNAPOOL_INIT_SIZE; j++) {
-    void *node = region + pool->node_size * j;
+    void *node = pool + self->node_size * j;
     deque_push_back(deque, node, deque_node_s, forw);
   }
-  pool->alloc_cur = 1;
+  self->alloc_cur = 1;
+
+  return true;
 }

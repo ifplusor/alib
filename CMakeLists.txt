@@ -32,6 +32,7 @@ set(alib_HEADER_FILES
         include/acom.h
         include/obj/list.h
         include/dlnk.h
+        include/segarray.h
         include/dynapool.h
         include/avl.h
         include/stream.h
@@ -48,6 +49,7 @@ set(alib_SOURCE_FILES
         src/acom.c
         src/obj/list.c
         src/dlnk.c
+        src/segarray.c
         src/dynapool.c
         src/avl.c
         src/stream.c

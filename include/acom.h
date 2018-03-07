@@ -64,7 +64,7 @@ extern "C" {
 #define REGION_OFFSET 18
 #endif
 
-#define POSITION_MASK ((0x0001LL << REGION_OFFSET) - 1)
+#define POSITION_MASK ((0x0001ULL << REGION_OFFSET) - 1)
 
 extern const size_t POOL_REGION_SIZE;
 extern const size_t POOL_POSITION_SIZE;

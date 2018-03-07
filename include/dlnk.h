@@ -13,10 +13,11 @@
 //
 // doubly linked cycle list
 
-struct doubly_linked_node;
-typedef struct doubly_linked_node *dlnk_node_t;
+struct alib_doubly_linked_node;
+typedef struct alib_doubly_linked_node *dlnk_node_t;
 
-typedef struct doubly_linked_node {
+// design for embedded in custom struct
+typedef struct alib_doubly_linked_node {
   dlnk_node_t forw, back;
 } dlnk_node_s;
 
