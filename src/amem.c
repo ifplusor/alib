@@ -1,30 +1,32 @@
-//
-// Created by james on 10/16/17.
-//
-/*
- * Description:  alloc memory with alignment, and record size.
+/**
+ * amem.h - memory management
+ *
+ * @author James Yin <ywhjames@hotmail.com>
+ *
+ * @note
+ *   alloc memory with alignment, and record size.
  */
+#include "alib/amem.h"
 
+#include <stdatomic.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "amem.h"
-#include "atomic.h"
-
 #define PADDING_SIZE (ALIGN_BASE(AMEM_ALIGN) + sizeof(ameta_s))
 
-#define amem_align_default(base) \
-  amem_align((char*)(base) + sizeof(ameta_s), AMEM_ALIGN)
+#define amem_align_default(base) amem_align((char*)(base) + sizeof(ameta_s), AMEM_ALIGN)
 
-#define update_amalloc_stat_alloc(__n) do { \
-  alib_add_fetch(used_memory, __n); \
-} while(0)
+#define update_amalloc_stat_alloc(__n)   \
+  do {                                   \
+    atomic_fetch_add(&used_memory, __n); \
+  } while (0)
 
-#define update_amalloc_stat_free(__n) do { \
-  alib_sub_fetch(used_memory, __n); \
-} while(0)
+#define update_amalloc_stat_free(__n)    \
+  do {                                   \
+    atomic_fetch_sub(&used_memory, __n); \
+  } while (0)
 
-static size_t used_memory = 0;
+static atomic_llong used_memory = 0;
 
 #ifdef _PTHREAD_H
 pthread_mutex_t used_memory_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -34,17 +36,16 @@ pthread_mutex_t used_memory_mutex = PTHREAD_MUTEX_INITIALIZER;
 #include <execinfo.h>
 void print_stacktrace() {
   int size = 16;
-  void *array[16];
+  void* array[16];
   int stack_num = backtrace(array, size);
-  char **stacktrace = backtrace_symbols(array, stack_num);
+  char** stacktrace = backtrace_symbols(array, stack_num);
   for (int i = 0; i < stack_num; ++i) {
     fprintf(stderr, "%s\n", stacktrace[i]);
   }
   free(stacktrace);
 }
 #else
-void print_stacktrace() {
-}
+void print_stacktrace() {}
 #endif
 
 static void amalloc_default_oom(size_t size) {
@@ -69,21 +70,21 @@ static void (*amalloc_oom_handler)(size_t) = amalloc_default_oom;
 
 // times of 8 byte
 typedef struct amem_meta {
-  void *base;
+  void* base;
   size_t size;
   char space[0];
 } ameta_s, *ameta_t;
 
 #define amem_meta(ptr) ((ameta_t)((char*)(ptr) - sizeof(ameta_s)))
 
-void *amalloc(size_t size) {
-  void *base = malloc(size + PADDING_SIZE);
+void* amalloc(size_t size) {
+  void* base = malloc(size + PADDING_SIZE);
 
   if (!base) {
     amalloc_oom_handler(size);
     return NULL;
   } else {
-    void *ptr = amem_align_default(base);
+    void* ptr = amem_align_default(base);
     ameta_t meta = amem_meta(ptr);
     meta->base = base;
     meta->size = size;
@@ -92,14 +93,14 @@ void *amalloc(size_t size) {
   }
 }
 
-void *acalloc(size_t nmemb, size_t size) {
-  void *base = calloc(1, nmemb * size + PADDING_SIZE);
+void* acalloc(size_t nmemb, size_t size) {
+  void* base = calloc(1, nmemb * size + PADDING_SIZE);
 
   if (!base) {
     amalloc_oom_handler(size);
     return NULL;
   } else {
-    void *ptr = amem_align_default(base);
+    void* ptr = amem_align_default(base);
     ameta_t meta = amem_meta(ptr);
     meta->base = base;
     meta->size = size;
@@ -108,14 +109,16 @@ void *acalloc(size_t nmemb, size_t size) {
   }
 }
 
-void *arealloc(void *ptr, size_t size) {
+void* arealloc(void* ptr, size_t size) {
   // When you pass NULL pointer to realloc, it behaves like malloc
-  if (ptr == NULL) return amalloc(size);
+  if (ptr == NULL){
+    return amalloc(size);
+  }
 
   ameta_t meta = amem_meta(ptr);
-  void *realptr = meta->base;
+  void* realptr = meta->base;
   size_t oldsize = meta->size;
-  void *newptr = realloc(realptr, size + PADDING_SIZE);
+  void* newptr = realloc(realptr, size + PADDING_SIZE);
 
   if (!newptr) {
     amalloc_oom_handler(size);
@@ -131,25 +134,25 @@ void *arealloc(void *ptr, size_t size) {
   }
 }
 
-void afree(void *ptr) {
-  if (ptr == NULL) return;
+void afree(void* ptr) {
+  if (ptr == NULL) {
+    return;
+  }
 
   ameta_t meta = amem_meta(ptr);
-  void *realptr = meta->base;
+  void* realptr = meta->base;
   size_t oldsize = meta->size;
   update_amalloc_stat_free(oldsize + PADDING_SIZE);
   free(realptr);
 }
 
-size_t amalloc_size(void *ptr) {
+size_t amalloc_size(void* ptr) {
   size_t size = amem_meta(ptr)->size;
   return size + PADDING_SIZE;
 }
 
 size_t amalloc_used_memory(void) {
-  size_t um;
-  alib_load_n(used_memory, um);
-  return um;
+  return (size_t)atomic_load(&used_memory);
 }
 
 void amalloc_set_oom_handler(void (*oom_handler)(size_t)) {

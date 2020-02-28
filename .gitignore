@@ -1,6 +1,3 @@
-third_party/pcre/include/pcre.h
-third_party/pcre2/include/pcre2.h
-
 include/config.h
 
 report*
@@ -17,6 +14,7 @@ gmon.out
 cmake-build-*
 
 .vs
+.vscode
 
 cmake-build/
 build/
