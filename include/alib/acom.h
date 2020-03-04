@@ -76,7 +76,7 @@ extern "C" {
 extern const size_t POOL_REGION_SIZE;
 extern const size_t POOL_POSITION_SIZE;
 
-sint64_t current_milliseconds();
+sint64_t current_milliseconds(void);
 
 #ifdef __cplusplus
 }
