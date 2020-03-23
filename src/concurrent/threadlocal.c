@@ -5,21 +5,23 @@
  */
 #include "alib/concurrent/threadlocal.h"
 
+#if defined(__STDC_NO_THREADS__)
+
 #if defined(_WIN32) && !defined(__PTHREAD__)
 
 // TODO: deal with auto free tls in Windows
 
 #endif
 
-bool tls_create_key(tls_key_t* key, tls_destruct_func destructor) {
+int tss_create(tss_t* key, tss_dtor_t destructor) {
   if (key == NULL) {
-    return false;
+    return thrd_error;
   }
 
 #if defined(_WIN32) && !defined(__PTHREAD__)
   *key = ::TlsAlloc();
   if (*key == TLS_OUT_OF_INDEXES) {
-    return false;
+    return thrd_error;
   }
   if (destructor != NULL) {
     // NOTE: windos平台下，tls不能注册自动释放函数，因此存在内存泄漏问题
@@ -28,48 +30,47 @@ bool tls_create_key(tls_key_t* key, tls_destruct_func destructor) {
 #else
   int ret = pthread_key_create(key, destructor);
   if (ret != 0) {
-    return false;
+    return thrd_error;
   }
 #endif
 
-  return true;
+  return thrd_success;
 }
 
-bool tls_delete_key(tls_key_t key) {
+void tss_delete(tss_t tss_id) {
 #if defined(_WIN32) && !defined(__PTHREAD__)
-  WINBOOL ret = ::TlsFree(key);
-  if (!ret) {
-    return false;
-  }
+  ::TlsFree(tss_id);
 #else
-  int ret = pthread_key_delete(key);
-  if (ret != 0) {
-    return false;
-  }
+  (void)pthread_key_delete(tss_id);
 #endif
-  return true;
 }
 
-void* tls_get_value(tls_key_t key) {
+void* tss_get(tss_t tss_key) {
 #if defined(_WIN32) && !defined(__PTHREAD__)
-  void* value = ::TlsGetValue(key);
+  void* value = ::TlsGetValue(tss_key);
 #else
-  void* value = pthread_getspecific(key);
+  void* value = pthread_getspecific(tss_key);
 #endif
   return value;
 }
 
-bool tls_set_value(tls_key_t key, void* value) {
+int tss_set(tss_t tss_id, void* val) {
 #if defined(_WIN32) && !defined(__PTHREAD__)
-  WINBOOL ret = ::TlsSetValue(key, value);
+  WINBOOL ret = ::TlsSetValue(tss_id, val);
   if (!ret) {
-    return false;
+    return thrd_error;
   }
 #else
-  int ret = pthread_setspecific(key, value);
+  int ret = pthread_setspecific(tss_id, val);
   if (ret != 0) {
-    return false;
+    return thrd_error;
   }
 #endif
-  return true;
+  return thrd_success;
 }
+
+void call_once(once_flag* flag, void (*init_func)(void)) {
+  (void)pthread_once(flag, init_func);
+}
+
+#endif  // __STDC_NO_THREADS__

@@ -12,22 +12,36 @@
 extern "C" {
 #endif /* __cplusplus */
 
+#if !defined(__STDC_NO_THREADS__)
+
+#include <threads.h>
+
+#else  // __STDC_NO_THREADS__
+
 #if defined(_WIN32) && !defined(__PTHREAD__)
 #include <Windows.h>
-typedef DWORD tls_key_t;
-#define ALIB_TLS_DEFN __declspec(thread)
+typedef DWORD tss_t;
+#define thread_local __declspec(thread)
 #else
 #include <pthread.h>
-typedef pthread_key_t tls_key_t;
-#define ALIB_TLS_DEFN __thread
+typedef pthread_key_t tss_t;
+#define thread_local __thread
+typedef pthread_once_t once_flag;
+#define ONCE_FLAG_INIT PTHREAD_ONCE_INIT
 #endif
 
-typedef void (*tls_destruct_func)(void*);
+enum { thrd_success = 0, thrd_nomem, thrd_timedout, thrd_busy, thrd_error };
 
-bool tls_create_key(tls_key_t* key, tls_destruct_func destructor);
-bool tls_delete_key(tls_key_t key);
-void* tls_get_value(tls_key_t key);
-bool tls_set_value(tls_key_t key, void* value);
+typedef void (*tss_dtor_t)(void*);
+
+int tss_create(tss_t* key, tss_dtor_t destructor);
+void tss_delete(tss_t tss_id);
+void* tss_get(tss_t tss_key);
+int tss_set(tss_t key, void* value);
+
+void call_once(once_flag* flag, void (*init_func)(void));
+
+#endif  // __STDC_NO_THREADS__
 
 #ifdef __cplusplus
 }

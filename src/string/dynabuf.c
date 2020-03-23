@@ -9,7 +9,7 @@
 // ========================================
 
 dynabuf_t dynabuf_alloc() {
-  dynabuf_t buf = malloc(sizeof(dynabuf_s));
+  dynabuf_t buf = amalloc(sizeof(dynabuf_s));
   if (buf != NULL) {
     buf->_buffer = NULL;
   }
@@ -21,7 +21,7 @@ bool dynabuf_free(dynabuf_t self) {
     return false;
   }
   dynabuf_clean(self);
-  free(self);
+  afree(self);
   return true;
 }
 
@@ -40,7 +40,7 @@ bool dynabuf_init(dynabuf_t self, size_t size) {
   if (size != 0) {
     // size 为 16 的倍数
     size = ROUND_UP_16(size + 1);
-    self->_buffer = malloc(size);
+    self->_buffer = amalloc(size);
     if (self->_buffer == NULL) {
       return false;
     }
@@ -56,7 +56,7 @@ bool dynabuf_init(dynabuf_t self, size_t size) {
 bool dynabuf_clean(dynabuf_t self) {
   if (dynabuf_reset(self)) {
     if (self->_buffer != str_empty) {
-      free(self->_buffer);
+      afree(self->_buffer);
     }
     self->_buffer = str_empty;
     self->_size = 1;
@@ -101,43 +101,65 @@ bool dynabuf_empty(dynabuf_t self) {
 const static size_t dynabuf_extend_space_size = ROUND_UP_16(DYNABUF_EXTEND_SPACE_SIZE);
 
 static inline size_t dynabuf_extend_size(size_t old_size, size_t insert_size) {
-  return old_size + (insert_size / dynabuf_extend_space_size + 1) * dynabuf_extend_space_size;
+  return ((old_size + insert_size) / dynabuf_extend_space_size + 1) * dynabuf_extend_space_size;
 }
 
 static inline void dynabuf_adjust_memory(dynabuf_t self, size_t len) {
   if (self->_cur + len > self->_size) {
     // extend buffer
     size_t new_size = dynabuf_extend_size(self->_size, len);
-    char* new_buffer = malloc(new_size);
+    char* new_buffer;
+    if (self->_buffer == str_empty) {
+      new_buffer = amalloc(new_size);
+    } else {
+      new_buffer = arealloc(self->_buffer, new_size);
+    }
     if (new_buffer == NULL) {
       ALOG_FATAL("memory error!");
     }
-    memcpy(new_buffer, self->_buffer, self->_cur);
-    if (self->_buffer != str_empty)
-      free(self->_buffer);
     self->_buffer = new_buffer;
     self->_size = new_size;
   }
 }
 
+/**
+ * dynabuf_write_eos - write src to dynabuf
+ */
 char* dynabuf_write(dynabuf_t self, const char* src, size_t len) {
-  //  if (self == NULL) return NULL;
+  if (self == NULL || (src == NULL && len != 0)) {
+    return NULL;
+  }
 
   dynabuf_adjust_memory(self, len);
 
-  char* dest = memcpy(self->_buffer + self->_cur, src, len);
-  self->_cur += len;
+  char* dest;
+  if (len > 0) {
+    dest = memcpy(self->_buffer + self->_cur, src, len);
+    self->_cur += len;
+  } else {
+    dest = &self->_buffer[self->_cur];
+  }
 
   return dest;
 }
 
+/**
+ * dynabuf_write_eos - write src to dynabuf with EOS
+ */
 char* dynabuf_write_eos(dynabuf_t self, const char* src, size_t len) {
-  //  if (self == NULL) return NULL;
+  if (self == NULL || (src == NULL && len != 0)) {
+    return NULL;
+  }
 
   dynabuf_adjust_memory(self, len + 1);
 
-  char* dest = memcpy(self->_buffer + self->_cur, src, len);
-  self->_cur += len;
+  char* dest;
+  if (len > 0) {
+    dest = memcpy(self->_buffer + self->_cur, src, len);
+    self->_cur += len;
+  } else {
+    dest = &self->_buffer[self->_cur];
+  }
 
   // append '\0'
   self->_buffer[self->_cur] = '\0';
@@ -158,7 +180,7 @@ int dynabuf_consume_until(dynabuf_t self, stream_t stream, const char* delim, st
   int ch;
 
   // start position
-  if (out_pos) {
+  if (out_pos != NULL) {
     out_pos->so = self->_cur;
   }
 
@@ -170,23 +192,20 @@ int dynabuf_consume_until(dynabuf_t self, stream_t stream, const char* delim, st
       // only one delimiter
       while ((ch = stream_getc(stream)) != EOF && ch != *s) {
         *(pb++) = (unsigned char)ch;
-        if ((pb - buf) == 256) {
+        if ((pb - buf) >= 256) {
           dynabuf_write(self, (char*)buf, 256);
           pb = buf;
         }
       }
     } else {
       unsigned char table[256];
-      unsigned char* p = memset(table, 0, 64);
-      memset(p + 64, 0, 64);
-      memset(p + 128, 0, 64);
-      memset(p + 192, 0, 64);
+      memset(table, 0, sizeof(table));
 
       do {
-        p[*s++] = 1;
-      } while (*s);
+        table[*s++] = 1;
+      } while (*s != '\0');
 
-      while ((ch = stream_getc(stream)) != EOF && !p[ch]) {
+      while ((ch = stream_getc(stream)) != EOF && !table[ch]) {
         *(pb++) = (unsigned char)ch;
         if ((pb - buf) == 256) {
           dynabuf_write(self, (char*)buf, 256);
@@ -199,7 +218,7 @@ int dynabuf_consume_until(dynabuf_t self, stream_t stream, const char* delim, st
   }
 
   // end position
-  if (out_pos) {
+  if (out_pos != NULL) {
     out_pos->eo = self->_cur;
   }
 

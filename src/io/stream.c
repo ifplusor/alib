@@ -14,7 +14,7 @@ bool file_stream_destruct(stream_t self) {
   }
   file_stream_t fs = (file_stream_t)self;
   fclose(fs->fp);
-  free(fs);
+  afree(fs);
   return true;
 }
 
@@ -48,7 +48,7 @@ stream_t file_stream_construct(const char* path) {
       break;
     }
 
-    file_stream_t stream = malloc(sizeof(file_stream_s));
+    file_stream_t stream = amalloc(sizeof(file_stream_s));
     if (stream == NULL) {
       break;
     }
@@ -72,8 +72,8 @@ bool string_stream_destruct(stream_t self) {
     return false;
   }
   string_stream_t ss = (string_stream_t)self;
-  free(ss->str);
-  free(ss);
+  afree(ss->str);
+  afree(ss);
   return false;
 }
 
@@ -108,14 +108,14 @@ static stream_func_l string_stream_func = {
 stream_t string_stream_construct(strlen_t str) {
   char* dup = NULL;
   do {
-    dup = malloc(str->len + 1);
+    dup = amalloc(str->len + 1);
     if (dup == NULL) {
       break;
     }
     memcpy(dup, str->ptr, str->len);
     dup[str->len] = '\0';
 
-    string_stream_t stream = malloc(sizeof(string_stream_s));
+    string_stream_t stream = amalloc(sizeof(string_stream_s));
     if (stream == NULL) {
       break;
     }
@@ -127,7 +127,7 @@ stream_t string_stream_construct(strlen_t str) {
     return (stream_t)stream;
   } while (0);
   if (dup != NULL) {
-    free(dup);
+    afree(dup);
   }
   return NULL;
 }
