@@ -94,11 +94,11 @@ size_t segarray_extend(segarray_t self, size_t size) {
     while (t > seg_size) {
       if (self->region_cur >= self->region_size) {
         // extend region table
-        self->_node_segment = arealloc(self->_node_segment, sizeof(uint8_t*) * (self->region_size << 1));
+        self->_node_segment = arealloc(self->_node_segment, sizeof(uint8_t*) * (self->region_size * 2));
         for (size_t i = 0; i < self->region_size; i++) {
           self->_node_segment[self->region_size + i] = NULL;
         }
-        self->region_size <<= 1;
+        self->region_size *= 2;
       }
 
       if (self->_node_segment[self->region_cur] == NULL) {
