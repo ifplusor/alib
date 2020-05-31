@@ -52,7 +52,7 @@ typedef enum _alog_level_ { trace, debug, info, warn, error, fatal } alog_level_
   do {                                                                    \
     char* prefix;                                                         \
     ALOG_PREFIX(level, prefix);                                           \
-    char* format = malloc(strlen(fmt) + 13);                              \
+    char* format = malloc(strlen(fmt) + 14);                              \
     sprintf(format, "%%s(%%d) %%s: %s\\n", fmt);                          \
     fprintf(stream, format, __FUNCTION__, __LINE__, prefix, __VA_ARGS__); \
     free(format);                                                         \
