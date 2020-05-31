@@ -30,7 +30,7 @@ aobj dstr_init(void* ptr, void* data) {
 
 void dstr_clean(aobj id) {
   if (TAGGED_AOBJECT(id)) {
-    dstr_t dstr = id;
+    // dstr_t dstr = id;
   }
 }
 

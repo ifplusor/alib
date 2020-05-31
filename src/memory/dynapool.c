@@ -5,13 +5,17 @@
  */
 #include "alib/memory/dynapool.h"
 
+typedef struct _alib_dynapool_free_node_ {
+  deque_node_s header;
+} dynapool_free_node_s, *dynapool_free_node_t;
+
 dynapool_t dynapool_construct(size_t node_size) {
   if (node_size == 0) {
     return NULL;
   }
 
   // adjust size for store linked meta
-  node_size = node_size < sizeof(deque_node_s) ? sizeof(deque_node_s) : node_size;
+  node_size = node_size < sizeof(dynapool_free_node_s) ? sizeof(dynapool_free_node_s) : node_size;
   node_size = ROUND_UP_8(node_size);  // 8 byte aligned
 
   // alloc some node
@@ -65,19 +69,19 @@ void* dynapool_alloc_node(dynapool_t self) {
     char* pool = self->_node_pool[self->alloc_cur];
     for (size_t j = 0; j < new_size; j++) {
       void* node = pool + self->node_size * j;
-      deque_push_back(deque, node, deque_node_s, forw);
+      deque_push_back(deque, node, dynapool_free_node_s, header);
     }
 
     self->alloc_cur++;
   }
-  return deque_pop_front(deque, deque_node_s, forw);
+  return deque_pop_front(deque, dynapool_free_node_s, header);
 }
 
 bool dynapool_free_node(dynapool_t self, void* node) {
   if (self == NULL || node == NULL) {
     return false;
   }
-  deque_push_front(&self->_free_list, node, deque_node_s, forw);
+  deque_push_front(&self->_free_list, node, dynapool_free_node_s, header);
   return true;
 }
 
@@ -93,7 +97,7 @@ bool dynapool_reset(dynapool_t self) {
   char* pool = self->_node_pool[0];
   for (size_t j = 0; j < DYNAPOOL_INIT_SIZE; j++) {
     void* node = pool + self->node_size * j;
-    deque_push_back(deque, node, deque_node_s, forw);
+    deque_push_back(deque, node, dynapool_free_node_s, header);
   }
   self->alloc_cur = 1;
 
