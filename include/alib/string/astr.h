@@ -22,7 +22,6 @@ extern "C" {
 // ========================
 
 char* astrdup(const char* s);
-size_t astrnlen(const char* s, size_t n);
 char* astrndup(const char* s, size_t n);
 char* astrnstr(const char* s1, const char* s2, size_t n);
 

@@ -19,12 +19,12 @@ typedef struct strie_node {
   void* children[256];
 } strie_node_s, *strie_node_t;
 
-typedef struct strie {
-} strie_s, *strie_t;
-
-void* strie_insert(strie_t self, uchar* key, uint32_t len, void* data);
-void* strie_delete(strie_t self, uchar* key, uint32_t len);
-void* strie_search(strie_t self, uchar* key, uint32_t len);
+//typedef struct strie {
+//} strie_s, *strie_t;
+//
+//void* strie_insert(strie_t self, uchar* key, uint32_t len, void* data);
+//void* strie_delete(strie_t self, uchar* key, uint32_t len);
+//void* strie_search(strie_t self, uchar* key, uint32_t len);
 
 #ifdef __cplusplus
 }

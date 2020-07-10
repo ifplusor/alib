@@ -22,6 +22,8 @@ extern "C" {
 #include <Windows.h>
 typedef DWORD tss_t;
 #define thread_local __declspec(thread)
+typedef INIT_ONCE once_flag;
+#define ONCE_FLAG_INIT INIT_ONCE_STATIC_INIT
 #else
 #include <pthread.h>
 typedef pthread_key_t tss_t;

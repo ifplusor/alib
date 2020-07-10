@@ -5,7 +5,7 @@
  */
 #include "alib/object/aobj.h"
 
-#include <stdatomic.h>
+#include "alib/concurrent/atomic.h"
 
 /*
  * memory map:
@@ -49,7 +49,7 @@ aobj _aobj_init(void* ptr, aobj_meta_t meta) {
   hdr->isa = meta->isa;
   hdr->clean = meta->clean;
   hdr->hash = meta->hash == NULL ? _aobj_hash_default : meta->hash;
-  atomic_store(&hdr->refcnt, 1);
+  atomic_long_store(&hdr->refcnt, 1);
   TAG_AOBJECT(hdr->object);
   return hdr->object;
 }
@@ -60,7 +60,7 @@ void _aobj_retain(aobj id) {
   }
   if (TAGGED_AOBJECT(id)) {
     aobj_hdr_t hdr = aobj_hdr(id);
-    atomic_fetch_add(&hdr->refcnt, 1);
+    atomic_long_fetch_add(&hdr->refcnt, 1);
   }
 }
 
@@ -70,7 +70,7 @@ void _aobj_release(aobj id) {
   }
   if (TAGGED_AOBJECT(id)) {
     aobj_hdr_t hdr = aobj_hdr(id);
-    if (atomic_fetch_sub(&hdr->refcnt, 1) <= 1) {
+    if (atomic_long_fetch_sub(&hdr->refcnt, 1) <= 1) {
       if (hdr->clean != NULL) {
         hdr->clean(id);
       }

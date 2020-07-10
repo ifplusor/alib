@@ -10,30 +10,15 @@ const strlen_s strlen_empty = {.ptr = "", .len = 0};  // "" have \0
 // extend for stand library
 // ================================
 
-char* astrdup(const char* s) {
-  char* dup = (char*)amalloc(sizeof(char) * (strlen(s) + 1));
-  if (dup != NULL) {
-    strcpy(dup, s);
-  }
-  return dup;
+char* astrdup(const char* src) {
+  return astrndup(src, RSIZE_MAX);
 }
 
-size_t astrnlen(const char* s, size_t n) {
-  size_t i;
-  for (i = 0; i < n; i++) {
-    if (s[i] == '\0') {
-      return i;
-    }
-  }
-  return n;
-}
-
-char* astrndup(const char* s, size_t n) {
-  size_t len = strnlen(s, n);
-  char* dup = amalloc(sizeof(char) * (len + 1));
-  strncpy(dup, s, len);
-  dup[len] = '\0';
-  return dup;
+char* astrndup(const char* src, size_t count) {
+  size_t destsz = strnlen_s(src, count) + 1;
+  char* dest = (char*)amalloc(destsz);
+  strncpy_s(dest, destsz, src, count);
+  return dest;
 }
 
 char* astrnstr(const char* s1, const char* s2, size_t n) {

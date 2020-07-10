@@ -9,7 +9,7 @@
 
 #if defined(_WIN32) && !defined(__PTHREAD__)
 
-// TODO: deal with auto free tls in Windows
+// FIXME: deal with auto free tls in Windows
 
 #endif
 
@@ -19,7 +19,7 @@ int tss_create(tss_t* key, tss_dtor_t destructor) {
   }
 
 #if defined(_WIN32) && !defined(__PTHREAD__)
-  *key = ::TlsAlloc();
+  *key = TlsAlloc();
   if (*key == TLS_OUT_OF_INDEXES) {
     return thrd_error;
   }
@@ -39,7 +39,7 @@ int tss_create(tss_t* key, tss_dtor_t destructor) {
 
 void tss_delete(tss_t tss_id) {
 #if defined(_WIN32) && !defined(__PTHREAD__)
-  ::TlsFree(tss_id);
+  TlsFree(tss_id);
 #else
   (void)pthread_key_delete(tss_id);
 #endif
@@ -47,7 +47,7 @@ void tss_delete(tss_t tss_id) {
 
 void* tss_get(tss_t tss_key) {
 #if defined(_WIN32) && !defined(__PTHREAD__)
-  void* value = ::TlsGetValue(tss_key);
+  void* value = TlsGetValue(tss_key);
 #else
   void* value = pthread_getspecific(tss_key);
 #endif
@@ -56,7 +56,7 @@ void* tss_get(tss_t tss_key) {
 
 int tss_set(tss_t tss_id, void* val) {
 #if defined(_WIN32) && !defined(__PTHREAD__)
-  WINBOOL ret = ::TlsSetValue(tss_id, val);
+  BOOL ret = TlsSetValue(tss_id, val);
   if (!ret) {
     return thrd_error;
   }
@@ -69,8 +69,20 @@ int tss_set(tss_t tss_id, void* val) {
   return thrd_success;
 }
 
+#if defined(_WIN32) && !defined(__PTHREAD__)
+BOOL CALLBACK InitHandleFunction(PINIT_ONCE InitOnce, PVOID Parameter, PVOID* lpContext) {
+  void (*init_func)(void) = Parameter;
+  init_func();
+  return TRUE;
+}
+#endif
+
 void call_once(once_flag* flag, void (*init_func)(void)) {
+#if defined(_WIN32) && !defined(__PTHREAD__)
+  (void)InitOnceExecuteOnce(flag, InitHandleFunction, init_func, NULL);
+#else
   (void)pthread_once(flag, init_func);
+#endif
 }
 
 #endif  // __STDC_NO_THREADS__

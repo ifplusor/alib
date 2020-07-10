@@ -43,8 +43,7 @@ static stream_func_l file_stream_func = {
 stream_t file_stream_construct(const char* path) {
   FILE* fp = NULL;
   do {
-    fp = fopen(path, "rb");
-    if (fp == NULL) {
+    if (fopen_s(&fp, path, "rb")) {
       break;
     }
 

@@ -8,9 +8,10 @@
  */
 #include "alib/amem.h"
 
-#include <stdatomic.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "alib/concurrent/atomic.h"
 
 #define PADDING_SIZE (ALIGN_BASE(AMEM_ALIGN) + sizeof(ameta_s))
 
@@ -18,19 +19,15 @@
 
 #define update_amalloc_stat_alloc(__n)   \
   do {                                   \
-    atomic_fetch_add(&used_memory, __n); \
+    atomic_llong_fetch_add(&used_memory, __n); \
   } while (0)
 
 #define update_amalloc_stat_free(__n)    \
   do {                                   \
-    atomic_fetch_sub(&used_memory, __n); \
+    atomic_llong_fetch_sub(&used_memory, __n); \
   } while (0)
 
 static atomic_llong used_memory = 0;
-
-#ifdef _PTHREAD_H
-pthread_mutex_t used_memory_mutex = PTHREAD_MUTEX_INITIALIZER;
-#endif
 
 #if __linux__
 #include <execinfo.h>
@@ -152,7 +149,7 @@ size_t amalloc_size(void* ptr) {
 }
 
 size_t amalloc_used_memory(void) {
-  return (size_t)atomic_load(&used_memory);
+  return (size_t)atomic_llong_load(&used_memory);
 }
 
 void amalloc_set_oom_handler(void (*oom_handler)(size_t)) {

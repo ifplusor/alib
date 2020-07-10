@@ -3,9 +3,6 @@ project(alib)
 
 set(CMAKE_C_STANDARD 11)
 
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
-
 option(ALIB_DEBUG "enable alib debug flag." OFF)
 option(__TYPEOF__ "enable typeof feature." OFF)
 
@@ -28,6 +25,7 @@ set(alib_HEADER_FILES
     include/alib/collections/map/avl.h
     include/alib/collections/map/rbtree.h
     include/alib/collections/map/strie.h
+    include/alib/concurrent/atomic.h
     include/alib/concurrent/threadlocal.h
     include/alib/io/alog.h
     include/alib/io/stream.h
@@ -50,6 +48,7 @@ set(alib_SOURCE_FILES
     src/collections/map/avl.c
     src/collections/map/rbtree.c
     src/collections/map/strie.c
+    src/concurrent/atomic.c
     src/concurrent/threadlocal.c
     src/io/stream.c
     src/memory/dynapool.c
@@ -60,17 +59,17 @@ set(alib_SOURCE_FILES
     src/string/dynabuf.c
     src/string/utf8.c)
 
-if(WIN32)
-  list(APPEND alib_SOURCE_FILES src/amem_win.cpp)
-endif()
-
 add_library(alib STATIC ${alib_HEADER_FILES} ${alib_SOURCE_FILES})
 target_include_directories(alib PUBLIC include)
+target_compile_definitions(alib PUBLIC __STDC_WANT_LIB_EXT1__=1)
+
+if(MSVC)
+  target_compile_definitions(alib PUBLIC __STDC_NO_THREADS__ __STDC_NO_ATOMICS__)
+  target_compile_options(alib PRIVATE /utf-8)
+else()
+  target_compile_options(alib PRIVATE -fPIC -fno-strict-aliasing)
+endif()
 
 if((NOT WIN32) OR __PTHREAD__)
   target_link_libraries(alib PUBLIC pthread)
 endif()
-
-if(UNIX)
-  target_compile_options(alib PRIVATE -fPIC)
-endif(UNIX)
