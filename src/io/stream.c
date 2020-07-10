@@ -43,9 +43,15 @@ static stream_func_l file_stream_func = {
 stream_t file_stream_construct(const char* path) {
   FILE* fp = NULL;
   do {
+#ifdef __STDC_LIB_EXT1__
     if (fopen_s(&fp, path, "rb")) {
       break;
     }
+#else
+    if ((fp = fopen(path, "rb")) == NULL) {
+      break;
+    }
+#endif
 
     file_stream_t stream = amalloc(sizeof(file_stream_s));
     if (stream == NULL) {
