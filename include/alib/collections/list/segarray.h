@@ -60,9 +60,7 @@ static inline void* segarray_access_s(segarray_t self, size_t index) {
   if (index >= self->len) {
     return NULL;
   }
-  register size_t region = index >> self->seg_blen;
-  register size_t position = index & self->seg_mask;
-  return (void*)&self->_node_segment[region][self->node_size * position];
+  return segarray_access(self, index);
 }
 
 segarray_t segarray_construct(size_t node_size, segarray_init_segment_f init_segment_func, void* init_segment_arg);

@@ -6,6 +6,8 @@
 #ifndef __ALIB_ATOMIC_H__
 #define __ALIB_ATOMIC_H__
 
+#include "../acom.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
@@ -24,7 +26,23 @@ extern "C" {
 #define atomic_llong_fetch_add atomic_fetch_add
 #define atomic_llong_fetch_sub atomic_fetch_sub
 
-#else  // __STDC_NO_ATOMICS__
+#elif defined(__GCC_ATOMICS__)
+
+typedef long atomic_long;
+
+typedef long long atomic_llong;
+
+#define atomic_long_load(atom) __atomic_load_n(atom, __ATOMIC_SEQ_CST)
+#define atomic_long_store(atom, value) __atomic_store_n(atom, value, __ATOMIC_SEQ_CST)
+#define atomic_long_fetch_add(atom, value) __atomic_fetch_add(atom, value, __ATOMIC_SEQ_CST)
+#define atomic_long_fetch_sub(atom, value) __atomic_fetch_sub(atom, value, __ATOMIC_SEQ_CST)
+
+#define atomic_llong_load(atom) __atomic_load_n(atom, __ATOMIC_SEQ_CST)
+#define atomic_llong_store(atom, value) __atomic_store_n(atom, value, __ATOMIC_SEQ_CST)
+#define atomic_llong_fetch_add(atom, value) __atomic_fetch_add(atom, value, __ATOMIC_SEQ_CST)
+#define atomic_llong_fetch_sub(atom, value) __atomic_fetch_sub(atom, value, __ATOMIC_SEQ_CST)
+
+#else  // __GCC_ATOMICS__
 
 #if defined(_WIN32)
 
@@ -51,7 +69,7 @@ void atomic_llong_store(volatile atomic_llong* atom, llong value);
 llong atomic_llong_fetch_add(volatile atomic_llong* atom, llong value);
 llong atomic_llong_fetch_sub(volatile atomic_llong* atom, llong value);
 
-#endif  // __STDC_NO_ATOMICS__
+#endif  // __GCC_ATOMICS__
 
 #ifdef __cplusplus
 }

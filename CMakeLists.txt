@@ -64,9 +64,13 @@ target_include_directories(alib PUBLIC include)
 target_compile_definitions(alib PUBLIC __STDC_WANT_LIB_EXT1__=1)
 
 if(MSVC)
-  target_compile_definitions(alib PUBLIC __STDC_NO_THREADS__ __STDC_NO_ATOMICS__)
+  target_compile_definitions(alib PUBLIC __STDC_NO_THREADS__
+                                         __STDC_NO_ATOMICS__)
   target_compile_options(alib PRIVATE /utf-8)
 else()
+  if(__GCC_ATOMICS__)
+    target_compile_definitions(alib PUBLIC __STDC_NO_ATOMICS__)
+  endif()
   target_compile_options(alib PRIVATE -fPIC -fno-strict-aliasing)
 endif()
 

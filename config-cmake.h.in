@@ -2,9 +2,10 @@
 
 /* compile options */
 #cmakedefine01 ALIB_DEBUG
-#cmakedefine   __TYPEOF__
+#cmakedefine __TYPEOF__
 
 /* dependent library flags */
-#cmakedefine   __PTHREAD__
+#cmakedefine __PTHREAD__
+#cmakedefine __GCC_ATOMICS__
 
 /* end config.h for CMake builds */

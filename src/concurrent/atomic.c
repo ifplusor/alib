@@ -5,7 +5,7 @@
  */
 #include "alib/concurrent/atomic.h"
 
-#if defined(__STDC_NO_ATOMICS__)
+#if defined(__STDC_NO_ATOMICS__) && !defined(__GCC_ATOMICS__)
 
 long atomic_long_load(volatile atomic_long* atom) {
 #if defined(_WIN32)
