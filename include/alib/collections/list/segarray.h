@@ -64,7 +64,15 @@ static inline void* segarray_access_s(segarray_t self, size_t index) {
 }
 
 segarray_t segarray_construct(size_t node_size, segarray_init_segment_f init_segment_func, void* init_segment_arg);
-#define segarray_construct_with_type(type) segarray_construct(sizeof(type), NULL, NULL);
+#define segarray_construct_with_type(type) segarray_construct(sizeof(type), NULL, NULL)
+
+segarray_t segarray_construct_ext(size_t node_size,
+                                  size_t seg_blen,
+                                  size_t region_size,
+                                  segarray_init_segment_f init_segment_func,
+                                  void* init_segment_arg);
+#define segarray_construct_with_type_ext(type, seg_blen, region_size) \
+  segarray_construct_ext(sizeof(type), seg_blen, region_size, NULL, NULL)
 
 bool segarray_destruct(segarray_t self);
 

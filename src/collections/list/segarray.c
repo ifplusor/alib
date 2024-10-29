@@ -6,15 +6,29 @@
 #include "alib/collections/list/segarray.h"
 
 segarray_t segarray_construct(size_t node_size, segarray_init_segment_f init_segment_func, void* init_segment_arg) {
+  return segarray_construct_ext(node_size, SEGARRAY_SEGMENT_BLEN, SEGARRAY_REGION_SIZE, init_segment_func,
+                                init_segment_arg);
+}
+
+segarray_t segarray_construct_ext(size_t node_size,
+                                  size_t seg_blen,
+                                  size_t region_size,
+                                  segarray_init_segment_f init_segment_func,
+                                  void* init_segment_arg) {
   if (node_size == 0) {
     return NULL;
   }
 
   node_size = ROUND_UP_8(node_size);  // 8 byte aligned
 
-  size_t seg_blen = SEGARRAY_SEGMENT_BLEN;
+  if (seg_blen < 10) {
+    seg_blen = 10;
+  }
+  if (region_size < 8) {
+    region_size = 8;
+  }
+
   size_t seg_mask = ((0x0001ULL << seg_blen) - 1);
-  size_t region_size = SEGARRAY_REGION_SIZE;
 
   // alloc some node
   segarray_t self = amalloc(sizeof(segarray_s) + node_size * (seg_mask + 1));
